@@ -1,0 +1,197 @@
+<mamecheat version="1">
+
+  <cheat desc="Infinite Credits">
+    <script state="run">
+      <action>maincpu.pb@10835F=09</action>
+    </script>
+  </cheat>
+
+  <cheat desc="Infinite Time">
+    <script state="run">
+      <action>maincpu.pb@10A416=99</action>
+    </script>
+  </cheat>
+
+  <cheat desc="Hit Anywhere (Both Players)"> <comment>Enemies hit anywhere as well. Use with Invincibilty for the best effect.</comment>
+    <script state="on">
+      <action>temp0 =maincpu.mw@00700E</action>
+      <action>temp1 =maincpu.mw@007072</action>
+    </script>
+    <script state="run">
+      <action>maincpu.mw@00700E=6002</action> <!-- This ROM cheat was made by Abystus -->
+      <action>maincpu.mw@007072=6002</action>
+    </script>
+    <script state="off">
+      <action>maincpu.mw@00700E=temp0 </action>
+      <action>maincpu.mw@007072=temp1 </action>
+    </script>
+  </cheat>
+
+  <cheat desc=" "/>
+
+  <cheat desc="Infinite Lives PL1">
+    <script state="run">
+      <action>maincpu.pb@1020F4=09</action>
+    </script>
+  </cheat>
+
+  <cheat desc="Infinite Energy PL1">
+    <script state="run">
+      <action>maincpu.pb@102033=44</action>
+    </script>
+  </cheat>
+
+  <cheat desc="Invincibility PL1">
+    <parameter>
+      <item value="0x00">Enabled</item>
+      <item value="0x80">Disabled</item>
+    </parameter>
+    <script state="run">
+      <action>maincpu.pb@102023=param|(maincpu.pb@102023 BAND ~80)</action>
+    </script>
+  </cheat>
+
+  <cheat desc="Select Combo PL1">
+    <parameter>
+      <item value="0x00">Punch Only Combo</item>
+      <item value="0x04">Finish Only Combo</item>
+    </parameter>
+    <script state="run">
+      <action>maincpu.pb@102039=param</action>
+    </script>
+  </cheat>
+
+  <cheat desc="Select Magic Level PL1">
+    <parameter>
+      <item value="0x01">1</item>
+      <item value="0x02">2</item>
+      <item value="0x03">3</item>
+      <item value="0x04">4</item>
+      <item value="0x05">5 (Max)</item>
+    </parameter>
+    <script state="run">
+      <action>maincpu.pb@1094C5=param</action>
+    </script>
+  </cheat>
+
+  <cheat desc="Select Character PL1">
+    <parameter>
+      <item value="0x01">Sailor Moon</item>
+      <item value="0x02">Sailor Mercury</item>
+      <item value="0x03">Sailor Mars</item>
+      <item value="0x04">Sailor Jupiter</item>
+      <item value="0x05">Sailor Venus</item>
+    </parameter>
+    <script state="run">
+      <action>maincpu.pb@102001=param</action>
+    </script>
+  </cheat>
+
+  <cheat desc=" "/>
+
+  <cheat desc="Infinite Lives PL2">
+    <script state="run">
+      <action>maincpu.pb@1021F4=09</action>
+    </script>
+  </cheat>
+
+  <cheat desc="Infinite Energy PL2">
+    <script state="run">
+      <action>maincpu.pb@102133=44</action>
+    </script>
+  </cheat>
+
+  <cheat desc="Invincibility PL2">
+    <parameter>
+      <item value="0x00">Enabled</item>
+      <item value="0x80">Disabled</item>
+    </parameter>
+    <script state="run">
+      <action>maincpu.pb@102123=param|(maincpu.pb@102123 BAND ~80)</action>
+    </script>
+  </cheat>
+
+  <cheat desc="Select Combo PL2">
+    <parameter>
+      <item value="0x00">Punch Only Combo</item>
+      <item value="0x04">Finish Only Combo</item>
+    </parameter>
+    <script state="run">
+      <action>maincpu.pb@102139=param</action>
+    </script>
+  </cheat>
+
+  <cheat desc="Select Magic Level PL2">
+    <parameter>
+      <item value="0x01">1</item>
+      <item value="0x02">2</item>
+      <item value="0x03">3</item>
+      <item value="0x04">4</item>
+      <item value="0x05">5 (Max)</item>
+    </parameter>
+    <script state="run">
+      <action>maincpu.pb@1095C5=param</action>
+    </script>
+  </cheat>
+
+  <cheat desc="Select Character PL2">
+    <parameter>
+      <item value="0x01">Sailor Moon</item>
+      <item value="0x02">Sailor Mercury</item>
+      <item value="0x03">Sailor Mars</item>
+      <item value="0x04">Sailor Jupiter</item>
+      <item value="0x05">Sailor Venus</item>
+    </parameter>
+    <script state="run">
+      <action>maincpu.pb@102101=param</action>
+    </script>
+  </cheat>
+
+  <cheat desc=" "/>
+
+  <cheat desc="Select Region"> <comment>After you enable this cheat to see any effect you must reset the game (with F3).</comment> <!-- Cheat based on Tourniquet's original EEPROM cheat -->
+    <parameter>
+      <item value="0x01">Japan</item>
+      <item value="0x02">US</item>
+      <item value="0x03">Europe</item>
+      <item value="0x04">Hong Kong</item>
+      <item value="0x05">Taiwan</item>
+      <item value="0x06">Korea</item>
+    </parameter>
+    <script state="run">
+      <action condition="(param==01) AND (maincpu.pb@10A34B==02)">maincpu.pb@10A34B=00</action>
+      <action condition="(param==01) AND (maincpu.pb@10A3CB==02)">maincpu.pb@10A3CB=00</action>
+      <action condition="(param==01) AND (maincpu.pb@10A40D==02)">maincpu.pb@10A40D=00</action>
+      <action condition="(param==02) AND (maincpu.pb@10A34B==02)">maincpu.pb@10A34B=01</action>
+      <action condition="(param==02) AND (maincpu.pb@10A3CB==02)">maincpu.pb@10A3CB=01</action>
+      <action condition="(param==02) AND (maincpu.pb@10A40D==02)">maincpu.pb@10A40D=01</action>
+      <action condition="(param==03) AND (maincpu.pb@10A34B==02)">maincpu.pb@10A34B=02</action>
+      <action condition="(param==03) AND (maincpu.pb@10A3CB==02)">maincpu.pb@10A3CB=02</action>
+      <action condition="(param==03) AND (maincpu.pb@10A40D==02)">maincpu.pb@10A40D=02</action>
+      <action condition="(param==04) AND (maincpu.pb@10A34B==02)">maincpu.pb@10A34B=03</action>
+      <action condition="(param==04) AND (maincpu.pb@10A3CB==02)">maincpu.pb@10A3CB=03</action>
+      <action condition="(param==04) AND (maincpu.pb@10A40D==02)">maincpu.pb@10A40D=03</action>
+      <action condition="(param==05) AND (maincpu.pb@10A34B==02)">maincpu.pb@10A34B=04</action>
+      <action condition="(param==05) AND (maincpu.pb@10A3CB==02)">maincpu.pb@10A3CB=04</action>
+      <action condition="(param==05) AND (maincpu.pb@10A40D==02)">maincpu.pb@10A40D=04</action>
+      <action condition="(param==06) AND (maincpu.pb@10A34B==02)">maincpu.pb@10A34B=05</action>
+      <action condition="(param==06) AND (maincpu.pb@10A3CB==02)">maincpu.pb@10A3CB=05</action>
+      <action condition="(param==06) AND (maincpu.pb@10A40D==02)">maincpu.pb@10A40D=05</action>
+    </script>
+  </cheat>
+
+  <cheat desc="Select Title Language">
+    <parameter>
+      <item value="0x01">Japanese</item>
+      <item value="0x02">English</item>
+    </parameter>
+    <script state="run">
+      <action condition="(param==01) AND (maincpu.pb@10A3C3==01)">maincpu.pb@10A3C3=00</action>
+      <action condition="(param==01) AND (maincpu.pb@10A40F==01)">maincpu.pb@10A40F=00</action>
+      <action condition="(param==02) AND (maincpu.pb@10A3C3==01)">maincpu.pb@10A3C3=01</action>
+      <action condition="(param==02) AND (maincpu.pb@10A40F==01)">maincpu.pb@10A40F=01</action>
+    </script>
+  </cheat>
+
+</mamecheat>
+<!-- Cheat file downloaded from http://www.mamecheat.co.uk, see cheat.txt for list of contributors. -->

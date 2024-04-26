@@ -1,0 +1,123 @@
+904000:   Sprites Start Region (8 Bytes each sprite)
+907FFF:   Sprites End Region
+908000:   HUD, Texts, etc Sprites Start Region
+90BFFF:   HUD, Texts, etc Sprites End Region
+90C000:   Floor Sprites Start Region
+90FFFF:   Floor Sprites End Region
+910000:   Background Sprites Start Region
+913FFF:   Background Sprites End Region
+914000:   Palletes
+Palletes
+B8A52:
+B8A72:
+B8A92:
+B8AB2:
+============================================================
+character memory region
+
+FFB274:   Player 1 Character Memory Region
+FFB3F4:   Player 2 Character Memory Region
+FFB574:   Player 3 Character Memory Region
+xxxx0C:   Air position (Height)
+xxxx10:   Ground position Y
+xxx182:   Extra Life Flag (use it to fix the immortal bug)
+
+FFD364:   1st enemy memory region?
+xxxx03:   Enemy ID
+xxxx06:   Action / Posture ID?
+xxxx6A:   Starting HP (Max 64)
+xxxx6C:   Current HP
+
+FFDD14:   Boss Memory Region?
+xxxx76:   Slice Target
+xxxxA2:   Slice Possible Target P1
+xxxxA4:   Slice Possible Target P2
+xxxxA6:   Slice Possible Target P3
+xxxxC4:   Slice Timer
+
+4C008:   Slice timer decrease.
+4C00E:   Slice timer reset code, add here too a reset to the targeting.
+
+14574:   Replace this code
+145CA:   Code that adds the sprite in the screen?
+
+smaller address - bigger address
+lsr 2 for title screen, lsr 7 for in game things
+and 3, now you have 0, 1 and 2
+
+
+
+
+
+Tag Team Action
+
+006902: Jack Push Jack
+00690C: Hannah Throw Jack
+006912: Mustapha Throw Mustapha
+006920: Mess Throw Mess
+
+
+Punch + Jump Attack Invulnerability After the End
+
+006C46: Mustapha Invulnerability
+006C47: Jack Invulnerability
+006C48: Mess Invulnerability
+006C49: Hannah Invulnerability
+
+
+Equal Characters Restriction Removal
+
+007266: Equal Characters Restriction Removal Mid Game
+00B23A: Equal Characters Restriction Removal Character Select Screen
+
+
+Stage Time
+
+01034E: 3rd Stage Time 
+01037C: Final Boss Time 
+0104E0: Player Spawn Time Increase Limit (After Death or Coin Use)
+0AFFDA: 5th Boss Time
+0B0830: 6th Boss Time
+
+
+Punch + Jump Attack Damage Taken
+
+010B08: Punch + Jump Attack Damage Taken 2nd Hit
+010B14: Punch + Jump Attack Damage Taken 1st Hit
+
+
+Extra Life Immortal Bug Fix
+
+018E62: Extra Life Immortal Bug Fix
+
+
+Weapon Bullets
+
+024D9E: Rifle Starting Bullets
+024EAA: Bazooka Starting Bullets
+02855A: Rifle Bullets Refill (Ammo Pickup)
+02858A: Bazooka Bullets Refill (Ammo Pickup)
+
+
+3rd Stage CPU Car Driver
+
+08C7B0: Hannah Car Driver.
+
+
+Punch + Jump Attack Damage Given
+
+0A2755: Jack Punch + Jump Attack Damage Given
+0A2935: Mustapha Punch + Jump Attack Damage Given
+0A2B25: Hannah Punch + Jump Attack Damage Given
+0A2D05: Mess Punch + Jump Attack Damage Given
+
+
+Play Mode
+
+0A85DC: Play Mode as 3 Players 3 Coin Chutes (Service Menu)
+
+
+Palletes
+
+0B7AB2: Mess Pallete Changed to Hannah
+0B7D12: Razor New Pallete
