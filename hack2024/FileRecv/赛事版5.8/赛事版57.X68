@@ -16,8 +16,9 @@ _begin_cl
 	jsr		$89e6
 	clr.l		($7fc0,A5)
 	clr.l		($7f20,A5)
-	move.b		#$7,($7668,A5)
-	move.b		#$3,($766c,A5)	
+	clr.l		($7f10,A5)
+	;move.b		#$7,($7668,A5)
+	;move.b		#$3,($766c,A5)	
 	rts
 	
 _again
@@ -129,12 +130,14 @@ _101d00
 	move.b	#$30,($3513,A5)
 	move.b	#$30,($3693,A5)
 	clr.b	($7fc0,A5)
+	clr.b	($7f11,A5)
 	cmpi.b	#$8,($7f21,A5)
 	bge	_yes_xg
 	clr.b	($4d9,A5)		
 	rts
 _up
 	move.b	#$1,($7fc0,A5)	;有人按了上键，进入练习模式
+	clr.b	($7f11,A5)
 	move.b	#$20,($3393,A5)	
 	move.b	#$20,($3513,A5)
 	move.b	#$20,($3693,A5)
@@ -144,14 +147,26 @@ _up
 	move.b	#$5,($4d9,A5)		
 	rts	
 _down
-	move.b	#$2,($7fc0,A5)	;有人按了下键，进入1V2模式
-	move.b	#$40,($3393,A5)	
-	move.b	#$40,($3513,A5)
-	move.b	#$40,($3693,A5)
-	cmpi.b	#$8,($7f21,A5)
-	bge	_yes_xg
-	clr.b	($4d9,A5)		
+	move.b	#$1,($7fc0,A5)	;有人按了下键，进入固定暴击练习模式
+	move.b	#$1,($7f11,A5)
+	move.b	#$20,($3393,A5)	
+	move.b	#$20,($3513,A5)
+	move.b	#$20,($3693,A5)
+	addq.b	#$2,($a3,A0)	/初始3命
+	move.w	#$18,($5f0,A5)		/强制直接最高难度
+	move.w	#$18,($5ee,A5)
+	move.b	#$5,($4d9,A5)		
 	rts
+	
+	;move.b	#$1,($7fc0,A5)	;有人按了下键，进入固定暴击练习模式
+	;move.b	#$1,($7f11,A5)
+	;move.b	#$40,($3393,A5)	
+	;move.b	#$40,($3513,A5)
+	;move.b	#$40,($3693,A5)
+	;cmpi.b	#$8,($7f21,A5)
+	;bge	_yes_xg
+	;clr.b	($4d9,A5)		
+	;rts
 _yes_xg
 	move.b	($7f20,A5),($4d9,A5)
 	rts	
@@ -216,22 +231,34 @@ _zccj
 
 
 
-;===============================1V3练习7BOSS随机暴击======================================================
+;===============================1V3练习7BOSS随机暴击===================================
 	org		$81962
-	jsr		$107200
+	jsr		_apx1072
 	org		$107200
+_apx1072
 	move.b		#$2,($aa,A6)		/原指令
 	tst.b		($7fc0,A5)
 	beq		_rtsss
-	cmpi.b		#$8,($1a,A5)
-	bgt		_updown_check
+	;cmpi.b		#$8,($1a,A5)
+	;bgt		_updown_check
 _suijibjbj
-	cmpi.b		#$2,($7fc1,A5)
+	tst.b		($7fc1,A5)
+	beq		_random_color
+	move.w		#$1f,($5f0,A5)		/强制直接最高难度
+	move.w		#$1f,($5ee,A5)
+	tst.b		($7f11,A5)
 	beq		_1V23bj
+	move.b		#$24,($3393,A5)
 	cmpi.b		#$1,($7fc1,A5)
-	beq		_1V23bj
-	cmpi.b		#$3,($7fc1,A5)
-	beq		_1V23bj
+	beq		_move23p
+	move.b		#$2a,($3393,A5)
+	cmpi.b		#$2,($7fc1,A5)
+	beq		_move23p
+	move.b		#$30,($3393,A5)
+	;cmpi.b		#$3,($7fc1,A5)
+_move23p
+	move.b		($3393,A5),($3513,A5)
+	move.b		($3393,A5),($3693,A5)
 _random_color
 	movem.l 		D0-D2/A0-A3,-(A7)		;入栈(目的借用寄存器)
 	movea.l		#$107440,A3
@@ -260,8 +287,6 @@ _rtsss
 	rts
 
 _1V23bj
-	move.w		#$1f,($5f0,A5)		/强制直接最高难度
-	move.w		#$1f,($5ee,A5)
 	movem.l		D0/A6,-(A7)
 	movea.l		#$107400,A6
 	moveq		#$0,D0
@@ -470,6 +495,17 @@ _time_minus
 _afa6
 	jmp	$afa6
 _diff_show
+	cmpi.b	#$9,($1a,A5)
+	bge	_7fe3p1
+	clr.b	($7f13,A5)
+	bra	_showdiffu
+_7fe3p1
+	addq.b	#1,($7f13,A5)
+	cmpi.b	#$4,($7f13,A5)
+	ble	_showdiffu
+	clr.b	($7fe3,A5)
+	move.w	#$1800,($4d0,A5)
+_showdiffu
 	move.b	#$32,($4ea,A5)
 	movem.l	D0-D3/A0-A3,-(A7)
 	lea      $90a51c,A1		*游戏难度
@@ -488,6 +524,14 @@ _diff_show
 	andi.w    #$f,D0
 	move.w   D0,($280,A1)
 	move.w   #$1e,($282,A1)
+	tst.b	($7f11,A5)
+	beq	_no_gd
+	lea	$90a21c,A1
+	move.w	#$23,($0,A1)
+	move.w	#$1e,($2,A1)
+	move.w	#$23,($80,A1)
+	move.w	#$1e,($82,A1)
+_no_gd
 	movem.l	(A7)+,D0-D3/A0-A3
 	rts
 _continus_dl
@@ -498,6 +542,9 @@ _continus_dl
 *============================大龙持续召唤兵==============================
 	org	$619ae
 	jsr	_continus_dl
+
+
+
 
 
 

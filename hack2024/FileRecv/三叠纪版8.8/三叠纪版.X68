@@ -19,12 +19,71 @@
 	jsr	_nextstage
 *==========================================================
 	org	$190000
+_1a0000
+	jmp	$1a0000
 _beginbj
+	cmpi.l	#$40484040,$2c9c0
+	bne	_beginbj
+	cmpi.l	#$40604840,$2c9c4
+	bne	_beginbj
+	cmpi.l	#$40504840,$2c9c8
+	bne	_beginbj
+	cmpi.l	#$40484048,$2c9cc
+	bne	_beginbj
+	cmpi.l	#$50404848,$2c9d0
+	bne	_beginbj
+	cmpi.l	#$40504048,$2c9d4
+	bne	_beginbj
+	cmpi.l	#$40484040,$2c9d8
+	bne	_beginbj
+	cmpi.l	#$48404840,$2c9dc
+	bne	_beginbj
+	cmpi.l	#$0c400005,$64e0
+	bne	_beginbj
+	cmpi.l	#$64000008,$64e4
+	bne	_beginbj
+	cmpi.l	#$322b006c,$64e8
+	bne	_beginbj
+	cmpi.l	#$53413c5f,$64ec
+	bne	_beginbj
+	cmpi.l	#$936b006c,$116d2
+	bne	_beginbj
+	cmpi.l	#$6e000006,$116d6
+	bne	_beginbj
 	move.w   #$4848,($11e,A3)
 	rts
 _clrbegin
-	move.b	#$7,($7668,A5)
-	move.b	#$3,($766c,A5)
+	;move.b	#$7,($7668,A5)
+	;move.b	#$3,($766c,A5)
+	cmpi.l	#$40484040,$2c9c0
+	bne	_beginbj
+	cmpi.l	#$40604840,$2c9c4
+	bne	_beginbj
+	cmpi.l	#$40504840,$2c9c8
+	bne	_beginbj
+	cmpi.l	#$40484048,$2c9cc
+	bne	_beginbj
+	cmpi.l	#$50404848,$2c9d0
+	bne	_beginbj
+	cmpi.l	#$40504048,$2c9d4
+	bne	_beginbj
+	cmpi.l	#$40484040,$2c9d8
+	bne	_beginbj
+	cmpi.l	#$48404840,$2c9dc
+	bne	_beginbj
+	cmpi.l	#$0c400005,$64e0
+	bne	_beginbj
+	cmpi.l	#$64000008,$64e4
+	bne	_beginbj
+	cmpi.l	#$322b006c,$64e8
+	bne	_beginbj
+	cmpi.l	#$53413c5f,$64ec
+	bne	_beginbj
+	cmpi.l	#$936b006c,$116d2
+	bne	_beginbj
+	cmpi.l	#$6e000006,$116d6
+	bne	_beginbj
+	
 	clr.l	($7fa0,A5)
 	clr.l	($7fa4,A5)
 	clr.l	($7fa8,A5)
@@ -149,6 +208,34 @@ _select_xc
 	move.w	#$1,($582,A0)
 	rts	
 _b1d0
+	cmpi.l	#$40484040,$2c9c0
+	bne	_beginbj
+	cmpi.l	#$40604840,$2c9c4
+	bne	_beginbj
+	cmpi.l	#$40504840,$2c9c8
+	bne	_beginbj
+	cmpi.l	#$40484048,$2c9cc
+	bne	_beginbj
+	cmpi.l	#$50404848,$2c9d0
+	bne	_beginbj
+	cmpi.l	#$40504048,$2c9d4
+	bne	_beginbj
+	cmpi.l	#$40484040,$2c9d8
+	bne	_beginbj
+	cmpi.l	#$48404840,$2c9dc
+	bne	_beginbj
+	cmpi.l	#$0c400005,$64e0
+	bne	_beginbj
+	cmpi.l	#$64000008,$64e4
+	bne	_beginbj
+	cmpi.l	#$322b006c,$64e8
+	bne	_beginbj
+	cmpi.l	#$53413c5f,$64ec
+	bne	_beginbj
+	cmpi.l	#$936b006c,$116d2
+	bne	_beginbj
+	cmpi.l	#$6e000006,$116d6
+	bne	_beginbj
          clr.b	($7fba,A5)
          clr.b	($4d9,A5)
 	add.w	D0,D0
@@ -232,6 +319,22 @@ _left_right
 	rts	
 ;--------------------นýนุ--------------------------
 _nextstage
+	cmpi.l	#$40484040,$2c9c0
+	bne	_beginbj
+	cmpi.l	#$40604840,$2c9c4
+	bne	_beginbj
+	cmpi.l	#$40504840,$2c9c8
+	bne	_beginbj
+	cmpi.l	#$40484048,$2c9cc
+	bne	_beginbj
+	cmpi.l	#$50404848,$2c9d0
+	bne	_beginbj
+	cmpi.l	#$40504048,$2c9d4
+	bne	_beginbj
+	cmpi.l	#$40484040,$2c9d8
+	bne	_beginbj
+	cmpi.l	#$48404840,$2c9dc
+	bne	_beginbj
 	clr.l	($7fa0,A5)
 	clr.l	($7fa4,A5)
 	clr.l	($7fa8,A5)    
@@ -1781,7 +1884,7 @@ _randombj
 	move.b	($11f,A3),D1
 	cmp.b	D0,D1
 	beq	_go_baoji	
-	jmp	$77777
+	bra	_randombj
 _go_baoji	
 	moveq	#0,D0
 	jsr	$119c
@@ -2322,9 +2425,12 @@ _no_next
 	movem.l	(A7)+,D0-D3/A0-A3
 _nomoshi
 	cmpi.b	#$9,($1a,A5)
-	blt	_rts18
+	bge	_7fe3p1
+	clr.b	($7fe3,A5)
+	bra	_rts18
+_7fe3p1
 	addq.b	#1,($7fe3,A5)
-	cmpi.b	#$8,($7fe3,A5)
+	cmpi.b	#$4,($7fe3,A5)
 	ble	_rts18
 	clr.b	($7fe3,A5)
 	move.w	#$1800,($4d0,A5)
@@ -2928,6 +3034,10 @@ _huan_obj1
 	move.w	#$64,D0
 	org	$7e8ec
 	move.w	#$64,D0
+
+
+
+
 
 
 
