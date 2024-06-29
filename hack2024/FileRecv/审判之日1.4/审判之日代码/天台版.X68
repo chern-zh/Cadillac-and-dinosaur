@@ -1,8 +1,8 @@
 *-------------------————开局游戏清空缓存——————————————————--—
-	ORG		$ad66                       ;开始游戏清理数据   
-	jsr		$104900
+	org		$a8ae                        ;开始游戏清理数据
+	jsr		_begin_cl
 	ORG		$104900
-	jsr		$89e6
+_begin_cl
 	clr.l		($7f70,A5)	
 	clr.l		($7ff0,A5)
 	clr.l		($7ff4,A5)
@@ -11,7 +11,9 @@
 	clr.l		($7fe0,A5)
 	clr.l		($7fcc,A5)
 	move.b		#$7,($7668,A5)
-	move.b		#$3,($766c,A5)	
+	move.b		#$3,($766c,A5)
+	move.b		#$5f,($777b,A5)
+	jsr		$6b88	
 	rts
 _6B_music
 	cmpi.b		#$3,($26,A6)
@@ -1093,6 +1095,8 @@ _455e2
 
 
 	
+
+
 
 
 

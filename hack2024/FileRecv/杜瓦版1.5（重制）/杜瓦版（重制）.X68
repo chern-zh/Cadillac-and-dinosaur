@@ -178,6 +178,8 @@ _19ba3
 		jmp		_gguan	
 		org		$b1d0
 		jsr		_begin
+		org		$a8ae
+		jsr		_set_difficulty
 		org		$18a1a		//¹ý³¡¾°
 		jsr		_clrcj
 		org		$3740
@@ -267,9 +269,14 @@ _acee_js
 		
 		
 *==============================================================================================================================		
-_begin
+
+_set_difficulty
 	move.b	#$7,($7668,A5)
 	move.b	#$3,($766c,A5)
+	move.b	#$5f,($777b,A5)
+	jsr	$3d2a
+	rts
+_begin
 	add.w	D0,D0
 	move.w	D0,($20,A0)
 	clr.l	($7fd0,A5)
@@ -432,6 +439,7 @@ _c0a
 	jsr		_ID_check			
 	org		$14270
 	jsr		_ID_check
+
 
 
 

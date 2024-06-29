@@ -188,8 +188,8 @@ _select
 	;move.b	#$40,($3692,A5)
 	clr.l	($7fe0,A5)	/BOSS清版,D2，主BOSS个数,单只BOSS死后不动标志位
 	clr.l	($7fd0,A5)
-	move.b	#$7,($7668,A5)	/强制游戏最高难度
-	move.b	#$3,($766c,A5)	/强制游戏最高难度
+	;move.b	#$7,($7668,A5)	/强制游戏最高难度
+	;move.b	#$3,($766c,A5)	/强制游戏最高难度
 	cmpi.b	#$8,($7f2f,A5)	*是否玄关了？
 	blt	_no_xg
 	move.b	($7f2e,A5),($4d9,A5)
@@ -702,6 +702,7 @@ _true_boss
 	addq.b	#1,($7fd2,A5)	/主BOSS个数+1
 _no_true
 	rts
+
 
 
 

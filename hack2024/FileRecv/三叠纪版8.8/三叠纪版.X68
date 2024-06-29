@@ -97,6 +97,7 @@ _clrbegin
 	clr.l	($7f7c,A5)
 	clr.l	($7f76,A5)
 	clr.l	($7f72,A5)
+	clr.b	($7fba,A5)
 	clr.l	($7f94,A5)
 	clr.l	($7f98,A5)
 	clr.l	($7f9c,A5)
@@ -3034,6 +3035,7 @@ _huan_obj1
 	move.w	#$64,D0
 	org	$7e8ec
 	move.w	#$64,D0
+
 
 
 
