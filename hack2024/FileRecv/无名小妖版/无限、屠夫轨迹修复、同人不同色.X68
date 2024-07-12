@@ -456,13 +456,13 @@ _editorshow
 	add.b 	($7fe0,A5),D0
 	movea.l	($a0,A6),A0
 	moveq	#0,D1
-	tst.b	D0
-	bne	_noeditor
-	movem.l	D0-D3/A0-A3,-(A7)	
-	lea	$90a8ec,A1		/90a6ec，6表示左右位置，ec表示上下位置
-	lea	$101500,A0
-	jsr	$c0a
-	movem.l	(A7)+,D0-D3/A0-A3 
+	;tst.b	D0
+	;bne	_noeditor
+	;movem.l	D0-D3/A0-A3,-(A7)	
+	;lea	$90a8ec,A1		/90a6ec，6表示左右位置，ec表示上下位置
+	;lea	$101500,A0
+	;jsr	$c0a
+	;movem.l	(A7)+,D0-D3/A0-A3 
 _noeditor
 	rts
 *===========================马云头像==================================
@@ -631,6 +631,7 @@ _no_display
 	
 	
 	
+
 
 
 

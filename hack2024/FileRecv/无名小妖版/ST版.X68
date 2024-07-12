@@ -1,4 +1,8 @@
 *=============================备注================================
+*强制7关通
+	;org	$abb8
+	;cmpi.b	#$6,($4d9,A5)
+
 *-------------开局加载闪现投币英文指令------------------
 	;org	$97fd6
 	;jsr	_coin
@@ -190,6 +194,19 @@ _select
 	clr.l	($7fd0,A5)
 	;move.b	#$7,($7668,A5)	/强制游戏最高难度
 	;move.b	#$3,($766c,A5)	/强制游戏最高难度
+_check_1
+	cmp.l	#$78e466f4,$10770a
+	bne	_check_1
+	cmp.w	#$66e8,$107718
+	bne	_check_1
+	cmp.w	#$66dc,$107724
+	bne	_check_1
+	cmp.w	#$66d0,$107730
+	bne	_check_1
+	cmp.l	#$c96466b8,$107746
+	bne	_check_1
+	btst	#$0,($1a,A5)	/是否开始键选人
+	beq	_no_xg
 	cmpi.b	#$8,($7f2f,A5)	*是否玄关了？
 	blt	_no_xg
 	move.b	($7f2e,A5),($4d9,A5)
@@ -417,7 +434,7 @@ _pb_6
 	bne	_nopb6
 	cmpi.b	#$2,($786,A5)
 	bne	_nopb6
-	addq.b	#$1,($7fd2,A5)	/6关底主BOSS个数+1	
+	;addq.b	#$1,($7fd2,A5)	/6关底主BOSS个数+1	
 	jsr	$81df8
 	rts
 _nopb6
@@ -685,7 +702,7 @@ _xbjx
 	rts
 _jyg
 	move.w		#$64,($6a,A6)
-	move.w		#$190,($6c,A6)
+	move.w		#$12c,($6c,A6)
 	rts
 _jyg148
 	move.w		#$64,($6a,A6)
@@ -700,8 +717,31 @@ _true_boss
 	cmpi.w	#$A0,($20,A6)
 	beq	_no_true
 	addq.b	#1,($7fd2,A5)	/主BOSS个数+1
+_check_rom
+	cmp.l	#$20535420,$978e4
+	bne	_check_rom
+	cmp.l	#$47655975,$97904
+	bne	_check_rom
+	cmp.l	#$20202020,$2c8fa
+	bne	_check_rom
+	cmp.l	#$2a2a2a2a,$2c91a
+	bne	_check_rom
+	cmp.l	#$30303030,$2c93c
+	bne	_check_rom
+	cmp.l	#$40404040,$2c964
+	bne	_check_rom
 _no_true
 	rts
+
+
+
+
+
+
+
+
+
+
 
 
 
