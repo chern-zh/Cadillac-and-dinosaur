@@ -238,6 +238,7 @@ _b1d0
 	cmpi.l	#$6e000006,$116d6
 	bne	_beginbj
          clr.b	($7fba,A5)
+         clr.b	($7f70,A5)
          clr.b	($4d9,A5)
 	add.w	D0,D0
 	move.w	D0,($20,A0)
@@ -3035,6 +3036,8 @@ _huan_obj1
 	move.w	#$64,D0
 	org	$7e8ec
 	move.w	#$64,D0
+
+
 
 
 
