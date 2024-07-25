@@ -115,6 +115,8 @@ _101d00
 	org	$102000
 	add.w	D0,D0
 	move.w	D0,($20,A0)
+	cmpi.w	#$4,D0
+	beq	_mstf_no_hy
 	btst	#$2,($16,A5)	;1P按了下方向键
 	bne	_down
 	btst	#$2,($17,A5)	;2P按了下方向键
@@ -126,14 +128,18 @@ _101d00
 	btst	#$3,($17,A5)	;2P按了上方向键
 	bne	_up
 	btst	#$3,($18,A5)	;3P按了上方向键
-	bne	_up		
+	bne	_up
+_mstf_no_hy		
 	move.b	#$30,($3393,A5)	
 	move.b	#$30,($3513,A5)
 	move.b	#$30,($3693,A5)
 	clr.b	($7fc0,A5)
 	clr.b	($7f11,A5)
+	btst	#$0,($1a,A5)
+	beq	_no_xguan
 	cmpi.b	#$8,($7f21,A5)
 	bge	_yes_xg
+_no_xguan
 	clr.b	($4d9,A5)		
 	rts
 _up
@@ -303,7 +309,7 @@ _1V23bj
 	andi.w		#$1f,D0
 	move.b		(A6,D0.w),($3693,A5)
 	movem.l		(A7)+,D0/A6
-	bra		_random_color
+	bra		_suijibjbj		//_random_color
 _1V4bj
 	;movem.l		D0/A6,-(A7)
 	;movea.l		#$107420,A6
@@ -543,6 +549,7 @@ _continus_dl
 *============================大龙持续召唤兵==============================
 	org	$619ae
 	jsr	_continus_dl
+
 
 
 
