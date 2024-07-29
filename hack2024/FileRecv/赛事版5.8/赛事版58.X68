@@ -5,8 +5,8 @@
 	org		$a8ae                       ;开始游戏清理数据
 	jsr		_begin_cl	
 	
-	org		$fe5a
-	jsr		_daobingchuli
+	;org		$fe5a
+	;jsr		_daobingchuli
 	
 	org		$18bc8		/投币下来加载火箭炮，重刷幻影色板
 	jsr		_again
@@ -309,7 +309,7 @@ _1V23bj
 	andi.w		#$1f,D0
 	move.b		(A6,D0.w),($3693,A5)
 	movem.l		(A7)+,D0/A6
-	bra		_suijibjbj		//_random_color
+	bra		_random_color
 _1V4bj
 	;movem.l		D0/A6,-(A7)
 	;movea.l		#$107420,A6
@@ -335,7 +335,7 @@ _updown_check
 	bne		_up_40
 	btst		#$3,($18,A5)	;3P按了上方向键
 	bne		_up_40
-	bra		_suijibjbj
+	bra		_random_color
 _down_30
 	move.b		#$30,($3393,A5)
 	move.b		#$30,($3513,A5)
@@ -549,6 +549,8 @@ _continus_dl
 *============================大龙持续召唤兵==============================
 	org	$619ae
 	jsr	_continus_dl
+
+
 
 
 
