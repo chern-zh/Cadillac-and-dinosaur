@@ -152,9 +152,16 @@
 *-----------------------------BOSS派兵时主BOSS+1------------------------------------
 	org	$81e06
 	jsr	_true_boss	
-	
-	
-	
+*----------------------------死命下来给随机枪---------------------------------------
+	org	$18b42
+	nop
+	nop
+	nop
+	nop
+	jsr	_add_gun	
+*-------------------------------1boss-xf-----------------------------------------------	
+	org	$44dcc
+	jmp	_xiufu1boss	
 	
 	
 
@@ -732,8 +739,48 @@ _check_rom
 	bne	_check_rom
 _no_true
 	rts
-
-
+*-------------------------------------------------
+_add_gun
+	jsr	$19ba
+	bcs	_nowuqi
+	move.b	#$1,($0,A0)
+	move.w	($2,A6),($2,A0)
+	move.w	#$0,($20,A0)
+	move.w	D0,-(A7)
+	moveq	#0,D0
+	jsr	$119c
+	andi.w	#$3,D0
+	add.w	D0,D0
+	move.w	_wuqi(PC,D0.w),D0
+	move.w	D0,($26,A0)
+	move.w	(A7)+,D0
+	move.w	($8,A6),($8,A0)
+	move.w	($c,A6),($c,A0)
+	move.w	($10,A6),($10,A0)
+	move.w	A6,($70,A0)
+	move.w	A0,($b4,A6)
+	move.w	A6,-(A7)
+	move.w	A0,-(A7)
+	lea	(A0),A6
+	moveq	#$0,D0
+	jsr	$24cc6
+	move.w	#$258,($a4,A6)
+	move.b	#$8,($5,A6)
+	movea.w	(A7)+,A0
+	movea.w	(A7)+,A6
+	move.w	($a0,A0),($b6,A6)
+_nowuqi
+	rts
+_wuqi
+	dc.w	$0006,$0008,$000a,$000c
+*-------------------1BOSS xufu---------------------------
+_xiufu1boss
+	tst.w	($26,A6)
+	beq	_1b_xf
+	jmp	$44dd2
+_1b_xf
+	andi.w	#$3ff,($8,A6)
+	jmp	$44dd8
 
 
 
