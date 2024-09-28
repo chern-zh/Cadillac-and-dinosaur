@@ -65,14 +65,32 @@ _no_f
 	
 *===============================½±Ãü=====================================
 	org	$6bcc
-	jmp	$104a00
+	jmp	_jiangming
+	
+	org	$31e44
+	jsr	_4hy_jx
+	move.w	($6c,A6),($6e,A6)
+	
 	org	$104a00
+_jiangming
 	cmpi.b	#$1,($7fc0,A5)
 	beq	_no_bonus
 	move.b	#$1,($10e,A6)
 	jmp	$6bd2	
 _no_bonus
 	jmp	$6bfc
+	
+_4hy_jx
+	move.w	D1,($6a,A6)
+	cmpi.b	#$3,($7fc1,A5)
+	bne	_no_jxie
+	cmpi.w	#$11c,($20,A6)
+	bne	_no_jxie
+	move.w	#$320,($6c,A6)
+	rts
+_no_jxie
+	move.w	D0,($6c,A6)
+	rts
 	
 *-----------------------------1V3---------------------------------------------
         org     $659e
@@ -549,6 +567,9 @@ _continus_dl
 *============================´óÁú³ÖÐøÕÙ»½±ø==============================
 	org	$619ae
 	jsr	_continus_dl
+
+
+
 
 
 
