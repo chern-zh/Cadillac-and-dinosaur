@@ -175,7 +175,9 @@ _19ba3
 		org		$81fea	;仅派兵BOSS触发此指令，不走此指令，打死BOSS后依旧能动					
 		jmp		_cancelpb		
 		org		$acee
-		jmp		_gguan	
+		jmp		_gguan
+		org		$af7c
+		jmp		_xuanguan	
 		org		$b1d0
 		jsr		_begin
 		org		$a8ae
@@ -274,6 +276,7 @@ _set_difficulty
 	move.b	#$7,($7668,A5)
 	move.b	#$3,($766c,A5)
 	move.b	#$5f,($777b,A5)
+	clr.w	($7f2e,A5)
 	jsr	$3d2a
 	rts
 _begin
@@ -284,18 +287,23 @@ _begin
 	move.b	#$40,($333a,A5)		/开局锁40暴击出场
 	move.b	#$40,($34ba,A5)
 	move.b	#$40,($363a,A5)
+	cmpi.b	#$8,($7f2f,A5)	*是否玄关了？
+	blt	_no_xg
+	move.b	($7f2e,A5),($4d9,A5)
+_no_xg
+	move.w	#$0,($7f2e,A5)
 	btst	#$2,($16,A5)	;1P按了下方向键
-	bne	_ms1v2
+	bne	_ms1v3
 	btst	#$2,($17,A5)	;2P按了下方向键
-	bne	_ms1v2
+	bne	_ms1v3
 	btst	#$2,($18,A5)	;3P按了下方向键
-	bne	_ms1v2
-	btst	#$3,($16,A5)	;1P按了上方向键
 	bne	_ms1v3
-	btst	#$3,($17,A5)	;2P按了上方向键
-	bne	_ms1v3
-	btst	#$3,($18,A5)	;3P按了上方向键
-	bne	_ms1v3
+	;btst	#$3,($16,A5)	;1P按了上方向键
+	;bne	_ms1v3
+	;btst	#$3,($17,A5)	;2P按了上方向键
+	;bne	_ms1v3
+	;btst	#$3,($18,A5)	;3P按了上方向键
+	;bne	_ms1v3
 	clr.b	($7f55,A5)
 	rts
 _ms1v2
@@ -317,7 +325,26 @@ _dms1vx
 _noms
 	move.b	D0,($4ef,A5)
 	rts
-
+_xuanguan
+	movem.l	D0-D1/A0,-(A7)
+	moveq	#$0,D0
+	moveq	#$0,D1
+	move.b	($16,A5),D0
+	move.b	($1b,A5),D1
+	not.b	D1
+	and.b	D1,D0
+	btst    #$3,D0    ;1P点按上方向键
+	beq     _time_minus	;等于0，没按
+	addq.b	#$1,($7f2e,A5)
+	andi.b	#$7,($7f2e,A5)
+	addq.b	#$1,($7f2f,A5)		*按键次数
+_time_minus	
+	movem.l (A7)+, D0-D1/A0
+	subq.b	#1,($a,A6)
+	bne	_afa6
+	jmp	$af82
+_afa6
+	jmp	$afa6
 *================================汉娜招式==============================
 	org	$143e
 	jsr	_zhaoshi
@@ -439,6 +466,7 @@ _c0a
 	jsr		_ID_check			
 	org		$14270
 	jsr		_ID_check
+
 
 
 
