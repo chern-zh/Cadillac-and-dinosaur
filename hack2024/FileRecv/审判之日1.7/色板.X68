@@ -37,8 +37,7 @@
 	jsr	_seban
 	org	$38e30		;Õ¿∑Ú∂ÓÕ‚µƒµÿ÷∑
 	jsr	_tuseban14
-	org    	$4c3b4		/4BOSSπÏº£–ﬁ∏¥
-	jmp    	_guiji4
+
 
 
 	org	$101500
@@ -179,17 +178,8 @@ _tuseban14
 	beq	_move_9a
 	rts
 
-_guiji4
-	;cmpi.b 	#$3,($4d9,A5)
-	;bne    	_4Bxf_
-	;cmpi.b 	#$2,($786,A5)
-	;bne    	_4Bxf_
-	;cmpi.b	#$400,($744,A5)
-	;ble	_4Bxf_ 
-	;jsr	$1862
-	;jmp	$4c3ba
-_4Bxf_
-	jmp	$4c3ae
+
+
 
 
 

@@ -186,31 +186,21 @@ _10_ys_guan
 		
 *-----------------------多模式回血--------------------------------------------
 _ms_return
-                  ;tst.b        ($7f70,A5)
-                  ;beq          _move1f4
+                  tst.b        ($7f70,A5)		*模式A
+                  beq          _move1f4
 		cmpi.b	#$1,($7f70,A5)          *模式C
 		beq	_no_plus
-		;cmpi.b	#$2,($7f70,A5)          *模式B
-		;beq	_plus_algrio
+		move.w	#$190,($6c,A6)
+		rts
 _move1f4
 		move.w	#$1F4,($6c,A6)		
 _no_plus
 		rts
-_plus_algrio
-		tst.b	($4d9,A5)
-		beq	_no_plus
-		cmpi.w	#$1f4,($6c,A6)
-		bcc	_move1f4
-		movem.l	D0-D1,-(A7)
-		moveq	#0,D0
-		moveq	#0,D1
-		move.w	#$1f4,D1
-		move.w	($6c,A6),D0
-		sub.w	D0,D1
-		divu.w	#$2,D1
-		add.w	D1,($6c,A6)
-		movem.l	(A7)+,D0-D1
-		rts	
+_ms_add
+                  tst.b        ($7f70,A5)		*模式A
+                  beq          _move1f4
+		move.w		#$190,($6c,A6)
+		rts			
 ;----------------------------初始血量与吃血调整------------------------------------	
 		; org		$28AB8			;这方法好像也可以
 		; BRA		$28ac2
@@ -230,18 +220,17 @@ _plus_algrio
         ;move.w #$64,($6a,a6)
 
     org $4DF0			*死命、投币、开局加血
-        move.w #$1f4,($6c,a6)
-        move.w #$1f4,($6e,a6)
-        move.w #$64,($6a,a6)
+	jsr	_ms_add
+	move.w 	($6c,A6),($6e,A6)
    *-----------设置吃食物回血上限---------------
     org $28ab8
- 	cmpi.w	#$3e8,($6c,A0)
+ 	cmpi.w	#$320,($6c,A0)
     ;org $28ac8
  	;cmpi.w	#$320,D0
 	;bls	$28ad4 	
 	;move.w	#$320,D0		*编译出现偏差
     org $28ae4
-	move.w	#$3e8,($6c,A6)
+	move.w	#$320,($6c,A6)
     org $28af2
 	move.w	#$63,($6c,A6)
 
@@ -268,7 +257,7 @@ _return
 _show_begin
 		     cmpi.b	#$1,($c6,A6)		*是否锁暴击
 		     bne		_zcxsbaoji
-		     tst.b	($7fbf,A5)		*是否D++
+		     tst.b	($7fba,A5)		*是否D
 		     bne		_dplus_bjxs
 		     suba.l	#$8,A0
 _zcxsbaoji
@@ -340,6 +329,9 @@ _2hsj
 	dc.l	$0fff0666,$079e0000,$0fff0364,$06660000
 	dc.l	$0fff0d91,$03640000,$0fff076c,$0d910000
 	dc.l	$0fff0d13,$076c0000,$0fff0111,$0d130000
+
+
+
 
 
 

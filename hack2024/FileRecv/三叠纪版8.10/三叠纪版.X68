@@ -53,8 +53,6 @@ _beginbj
 	move.w   #$4848,($11e,A3)
 	rts
 _clrbegin
-	;move.b	#$7,($7668,A5)
-	;move.b	#$3,($766c,A5)
 	cmpi.l	#$40484040,$2c9c0
 	bne	_beginbj
 	cmpi.l	#$40604840,$2c9c4
@@ -97,7 +95,7 @@ _clrbegin
 	clr.l	($7f7c,A5)
 	clr.l	($7f76,A5)
 	clr.l	($7f72,A5)
-	clr.b	($7fba,A5)
+	clr.l	($7fba,A5)
 	clr.l	($7f94,A5)
 	clr.l	($7f98,A5)
 	clr.l	($7f9c,A5)
@@ -106,20 +104,17 @@ _clrbegin
 	rts
 _clr1901
 	move.b		#$2,($0,A6)
-	move.w		#$258,($ec,A6)
+	move.w		#$100,($ec,A6)
 	clr.l		($7fe0,A5)
-	clr.l		($7f82,A5)
-	tst.b		($7f77,A5)
-	beq		_zjfhui
-	movem.l 		D0-D7/A0-A6,-(A7)	
-	jsr 		$892c                    ;设置亮度
-	jsr 		$162ae		;加载血条与头像
-	cmpi.b		#$f,($7f77,A5)
-	bne		_chuzhanjk
-	clr.b		($7f77,A5)  
-_chuzhanjk 	
-	movem.l 		(A7)+,D0-D7/A0-A6
-_zjfhui
+	tst.b		($7fba,A5)
+	beq		_no_d_fixed
+	tst.b		($3274,A5)
+	beq		_no_d_fixed
+	move.b		#$60,($7f49,A5)
+	move.w		#$6060,($3392,A5)
+	move.b		#1,($333a,A5)
+	rts
+_no_d_fixed
 	rts		
 _fbf4
 	jsr	$fbf4
@@ -207,6 +202,7 @@ _select_xc
 	move.l	#$3a0001,($500,A0)
 	move.w	D2,($580,A0)
 	move.w	#$1,($582,A0)
+	move.b	#$1,($7fbc,A5)		*选关标志，关卡是否显示判断
 	rts	
 _b1d0
 	cmpi.l	#$40484040,$2c9c0
@@ -242,83 +238,46 @@ _b1d0
          clr.b	($4d9,A5)
 	add.w	D0,D0
 	move.w	D0,($20,A0)
-	add.w	D0,($14,A5)
 	movem.l	D0-D1,-(A7)
-	move.b   ($636,A5),D0
-	add.b	D0,($15,A5)
+	move.b   ($636,A5),($7f5c,A5)
 	moveq	#0,D1
 	move.b	($2,A0),D1
 	add.b	#$16,D1
 	btst	#$2,(A5,D1.w)	;玩家按了下方向键
 	bne	_down
 	btst	#$3,(A5,D1.w)	;玩家按了上方向键
-	bne	_up	
-         moveq          #0,D0
-         jsr            $119c
-         andi.w         #$7,D0
-         add.w          D0,D0
-         add.w          D0,D0
-         move.w         _yc1_a(PC,D0.w),($7f5c,A5)
-         addq.w         #2,D0
-         move.w         _yc1_a(PC,D0.w),($7f5e,A5)
-	movem.l        (A7)+,D0-D1
+	bne	_up
+	clr.b		($7fba,A5)	;模式
+	clr.b		($7f49,A5)
+	clr.b		($c6,A0)
+	move.w		#$4848,($11e,A0)	
+	movem.l		(A7)+,D0-D1
+	rts
+_up
+	move.b		#$2,($7f70,A5)		*简易模式正序八关B模式
+	clr.b		($7fba,A5)	;
+	clr.b		($7f49,A5)
+	clr.b		($c6,A0)
+	move.w		#$4848,($11e,A0)
+	movem.l		(A7)+,D0-D1
 	rts	
 _down
 	move.b		#$1,($7f70,A5)		*挑战模式正序八关C模式
-         moveq          #0,D0
-         jsr            $119c
-         andi.w         #$7,D0
-         add.w          D0,D0
-         add.w          D0,D0
-         move.w         _yc1_c(PC,D0.w),($7f5c,A5)
-         addq.w         #2,D0
-         move.w         _yc1_c(PC,D0.w),($7f5e,A5)
-	bsr		_true_c
-	movem.l        (A7)+,D0-D1
-	rts
-_up
-	move.b	      #$2,($7f70,A5)		*简易模式正序八关B模式
-         moveq          #0,D0
-         jsr            $119c
-         andi.w         #$7,D0
-         add.w          D0,D0
-         add.w          D0,D0
-         move.w         _yc1_b(PC,D0.w),($7f5c,A5)
-         addq.w         #2,D0
-         move.w         _yc1_b(PC,D0.w),($7f5e,A5)
-	movem.l        (A7)+,D0-D1
-	rts
-_yc1_a	
-         dc.l           $000c0000,$00480200,$016c0000,$00180000
-         dc.l           $000c0000,$00480200,$016c0000,$00180000
-_yc1_b
-         dc.l           $011c0000,$00480200,$016c0000,$00180000
-         dc.l           $011c0000,$00480200,$016c0000,$00180000
-_yc1_c
-         dc.l           $011c0000,$00480200,$011c0000,$00480200
-         dc.l           $011c0000,$00480200,$011c0000,$00480200
-_true_c
 	moveq		#0,D1
 	move.b		($2,A0),D1
-         	btst		D1,($1a,A5)	;玩家按了开始键
-	bne		_push_start
-	move.b		#$1,($7fba,A5)
-	move.b		#$1,($7fbf,A5)	;D+标志位
 	add.b		#$16,D1
 	btst		#$5,(A5,D1.w)	；玩家按了B键
 	bne		_push_b_key
-	tst.b		($2,A0)
-	bne		_no_1p_d_plus
-	move.b		#$60,($7f49,A5)
-	move.b		#$1,($c6,A0)
-	move.w		#$6060,($11e,A0)
-_no_1p_d_plus
+	move.b		#$1,($7fba,A5)
+	move.w		#$5050,($11e,A0)
+	movem.l		(A7)+,D0-D1
 	rts
 _push_b_key
-	clr.b		($7fbf,A5)	
-	rts
-_push_start
 	clr.b		($7fba,A5)	;C模式
+	clr.b		($7f49,A5)
+	clr.b		($c6,A0)
+	move.w		#$4848,($11e,A0)
+	movem.l		(A7)+,D0-D1
 	rts
 	
 ;--------------------过关--------------------------
@@ -495,8 +454,6 @@ _true_7c0ce
 		jmp		$7c0ce
 
 *--------------------------------幻影、屠夫尸体消失，马云清版-1--------------------------------------------
-	org		$2af8c
-	move.l		#$4000000,($4,A6)	
 	org		$2af94		*前端
 	jsr		$18f400
 	org		$52ebe		*后端
@@ -505,24 +462,28 @@ _true_7c0ce
 	jsr		_act_b
 	org		$52e9c		*动作
 	jsr		_act_e	
-	org		$18f400
 *---------------前端------------------------------
+	org		$18f400
 	cmpi.w		#$f4,($20,A6)
 	bne		_11cshiti
 	cmpi.b		#$1,($4d9,A5)		
 	bne		_hmj
 	cmpi.b		#$2,($786,A5)
 	bne		_hmj
-	subi.w		#$100,($26,A6)
-	beq		_bhmj		*最后一阶，不变身，过关
-	move.w		#$90,($20,A6)
 	bra		_bhmj	
 _11cshiti	
 	cmpi.w		#$11c,($20,A6)
 	beq		_11cjc			;
 	cmpi.w		#$90,($20,A6)
-	beq		_5gjc	
+	beq		_5gjc
+	cmpi.w		#$178,($20,A6)
+	beq		_178jc	
 	bra		_bhmj	
+_178jc
+	cmpi.b		#$3,($786,A5)
+	beq		_bhmj
+	move.w		#$90,($20,A6)
+	bra		_bhmj
 _5gjc
 	cmpi.b		#$4,($4d9,A5)		
 	bne		_5boss_minus
@@ -532,17 +493,22 @@ _5gjc
 _11cjc
 	tst.b		($7f77,A5)
 	beq		_no1minus
+	cmpi.b		#$6,($4d9,A5)
+	bne		_no1minus
+	cmpi.b		#$1,($786,A5)
+	bne		_no1minus
 	subq.b		#$1,($7fe0,A5)	
 _no1minus
 	cmpi.b		#$6,($4d9,A5)		
 	bne		_hmj
 	cmpi.b		#$3,($786,A5)
 	bne		_hmj
-	bra		_bhmj		
+	bra		_bhmj
+		
 _5boss_minus
 	subq.b		#$1,($7fe0,A5)	
 _hmj	
-	move.w		#$38,($20,A6)		;尸体换成小兵
+	move.w		#$28,($20,A6)		;尸体换成小兵
 	move.w		#$0,($26,A6)	
 _bhmj	
 	move.b		#$1,($0,A6)
@@ -550,9 +516,9 @@ _bhmj
 *---------------------------后端------------------------------
 _houduan
 	clr.w		($de,A6)
-	cmpi.b		#$F,($3,A6)
+	cmpi.b		#$25,($3,A6)
 	bne		_90A0
-	move.w		#$F4,($20,A6)
+	move.w		#$150,($20,A6)
 	move.b		#$e,($96,A6)
 	rts
 _90A0
@@ -560,37 +526,29 @@ _90A0
 	rts
 *--------------------------动作--------------------------------
 _act_b
-	cmpi.b		#$f,($3,A6)
-	beq		_tufu_act1
+	cmpi.b		#$25,($3,A6)	*是否178
+	beq		_178_act
 	jsr		$120e
 	rts
-_tufu_act1
-	cmpi.w		#$200,($26,A6)
-	bne		_second1
-_first1
-	moveq		#$12,D0		*屠夫开始动作
-	jsr		$120e
-	rts
-_second1
-	moveq		#$3,D0		*屠夫开始动作
+_178_act
+	moveq		#$12,D0		*178开始动作
 	jsr		$120e
 	rts
 _act_e
-	cmpi.b		#$f,($3,A6)
-	beq		_tufu_act2
+	cmpi.b		#$25,($3,A6)	*是否178
+	beq		_178_act2
 	jsr		$120e
 	rts
-_tufu_act2
-	cmpi.w		#$200,($26,A6)
-	bne		_second2
-_first2
-	moveq		#$14,D0		*屠夫结束动作
+_178_act2
+	moveq		#0,D0
+	jsr		$119c
+	andi.w		#$7,D0
+	move.b		_act178_end(PC,D0),D0
+	;moveq		#$2,D0		*178结束动作
 	jsr		$120e
 	rts
-_second2
-	moveq		#$2,D0		*屠夫结束动作
-	jsr		$120e
-	rts	
+_act178_end
+	dc.l		$040e1014,$16181a14	
 *------------------------取消马云慢动作，震死小兵、变身头像------------------------------------------------
 	org		$52d8a		/震死小兵
 	jmp		$105170
@@ -615,6 +573,8 @@ _52d9c
 	bne		_90rts
 	cmpi.w		#$1100,($744,A5)
 	ble		_90rts
+	cmpi.b		#$25,($3,A6)	*是否178变的假马云
+	beq		_90rts
 	cmpi.b		#$1,($7f70,A5)
 	beq		_90rts
 	move.b		#$2,($50e,A5)	
@@ -669,18 +629,24 @@ _6b_jjx
 	bne		_noytjx			/非6关底加血
 	cmpi.b		#$3,($786,A5)
 	bne		_noytjx
-	move.w            #$320,($6c,A6)
-_noytjx	
-	moveq             #0,D0
-         move.b            ($7fee,A5),D0
-         mulu.w            #$32,D0
-	add.w		D0,($6c,A6)
-	cmpi.b            #$3,($dd,A6)
-	bge               _xie_2_3
+	move.w            #$640,($6c,A6)
 	move.w		($6c,A6),($6e,A6)
 	rts
-_xie_2_3
-        add.w          #$64,($6c,A6)
+_noytjx	
+	moveq		#0,D0
+         tst.b		($7fee,A5)
+         beq		_x4_6boss
+         jsr		$119c
+         and.w		#$7f,D0
+         add.w		D0,($6c,A6)
+_x4_6boss
+	tst.b		($dd,A6)
+	beq               _rts_6b_jx
+	moveq		#0,D0
+	jsr		$119c
+	and.w		#$7f,D0
+	and.w		D0,($6c,A6)
+_rts_6b_jx
         move.w	     ($6c,A6),($6e,A6)
         rts
 
@@ -727,9 +693,7 @@ _2b_pb
 	rts	
 _3b_pb
 	cmpi.b		#$2,($4d9,A5)
-	bne		_no_pb
-	;cmpi.w		#$2ccc,($744,A5)
-	;bls		_no_pb	
+	bne		_no_pb	
 	jmp		$7bedc
 _4b_pb
 	cmpi.b		#$3,($4d9,A5)
@@ -883,11 +847,6 @@ _syc
         org     $101c00
 _1v3v3v3
         move.b  #$2,($4ef,A5)       ;强制1V3模式
-        tst.b	($7fbf,A5)
-        beq	_no_d_plus
-        move.b	#$2,($7fee,A5)
-        rts
-_no_d_plus
         move.b  D0,($7fee,A5)          ;将实际玩家数量放入ffffee
         rts
 _1bossmy
@@ -946,7 +905,8 @@ _clr8_boss
 	clr.l		D0
 	jsr		$119c
          andi.w		#$7,D0			;随机数在D0里，求余,限制范围( )
-	mulu.w		#$4,D0                                 ;乘个4，变为4的倍数
+	add.w		D0,D0                                 ;乘个4，变为4的倍数
+	add.w		D0,D0                                 ;乘个4，变为4的倍数
 	move.w		_3b_xiaobing_data(PC,D0),($20,A0)	;取下表中随机一个敌兵
 	addi.b		#$2,D0
 	move.w		_3b_xiaobing_data(PC,D0),($26,A0)	;取下表中紧随的出场方式		
@@ -971,19 +931,9 @@ _3b_buji_data
 ;---------------------------随机出兵---------------------------------------
 	org		$fe5a
 	jsr		$107000
-	org		$107000
-	;cmpi.b            #$ee,($f,A2)
-	;bne               _no_c_boss
-	;cmpi.b		#$1,($7f70,A5)
-	;beq		_c_boss
-	;tst.b		($7fee,A5)
-	;bne		_c_boss
-	;move.w		#$138,($20,A0)
-_c_boss
-	;clr.b		($96,A0)
-	;rts	
+	org		$107000	
 _no_c_boss
-	movem.l  		D0,-(A7)		;入栈
+	movem.l  		D0-D1,-(A7)		;入栈
 	moveq		#0,D0		
 	move.b		($3,A2),d0		;检测是否箱子或破门等
 	andi.b		#$f,D0			;取个位
@@ -1008,14 +958,10 @@ _no_c_boss
 	cmpi.w  		#$fc,($20,A0)       ;是否飞刀手
 	beq     		_sj1_
 	cmpi.w  		#$118,($20,A0)       ;摩托车
-	beq     		_sj1_
-	;cmpi.w  		#$18,($20,A0)       ;狮子
-	;beq     		_sj1_
-	;cmpi.w  		#$c,($20,A0)       ;链球
-	;beq     		_sj1_	
+	beq     		_sj1_	
 _nosuiji
 	move.b		($f,A2),($96,A0)
-	movem.l  		(A7)+,D0			;把原来D0中的数据移回去	
+	movem.l  		(A7)+,D0-D1			;把原来D0中的数据移回去	
 	rts
 _78gd_no
          cmpi.w                 #$7c,($20,A0)
@@ -1036,14 +982,10 @@ _sj1_
 	beq		_no_lianqiu
 	cmpi.b		#$2,($786,A5)		;是否3场景
 	beq		_no_dalong	
-	cmpi.b		#$3,($786,A5)		;是否关底
-	beq		_8gdsj
 	bra		_no_gdsj
 _jc7	
 	cmpi.b		#$6,($4d9,A5)		;7关
 	bne		_jc6
-	cmpi.b		#$3,($786,A5)		;是否关底
-	beq		_gdsj
 	cmpi.b		#$1,($786,A5)		;是否电梯
 	beq		_dianticl	
 	bra		_no_gdsj	
@@ -1073,18 +1015,14 @@ _jc4
 	bne		_jc3
 	cmpi.b		#$2,($786,A5)		;是否第3场景
 	bne		_no_gdsj			
-	cmpi.w		#$120,($744,A5)		;是否关底
-	bge		_gdsj
-	bra		_no_gdsj
+	bra		_gdsj
 _jc3
 	cmpi.b		#$2,($4d9,A5)		;3关
 	bne		_jc2	
 	tst.b		($7f79,A5)
 	bne		_nosuiji
 	cmpi.w		#$200,($744,A5)		;检测3关卷轴
-	bge		_no_gdsj			/3关后半部分不随机
-
-	;bra		_no_gdsj	
+	bge		_no_gdsj			/3关后半部分不随机	
 	bra		_nosuiji	
 _jc2
 	cmpi.b		#$1,($4d9,A5)		;2关
@@ -1093,48 +1031,37 @@ _jc2
 	beq		_gdsj
 	tst.b		($7f73,A5)
 	beq		_no_gdsj
-	cmpi.w		#$b00,($744,A5)
-	bge		_no_gdsj
-	bra		_geigexie	
+	bra		_nosuiji	
 _jc1
 	cmpi.b		#$2,($786,A5)		;是否第3场景
 	bne		_no_gdsj			;
 	bra		_gdsj			*1关底出精英怪		
 *----------------------------非关底随机----------------------------------------------
 _dianticl	
-	tst.b		($7f77,A5)
+	tst.b		($7f77,A5)		*是否隐藏电梯
 	beq		_no_dalong
-	move.w		($7f5c,A5),($20,A0)
-	move.w		($7f5e,A5),($26,A0)
+	move.w            #$11c,($20,A0)
 	moveq		#0,D0	
 	addq.w		#1,($7f66,A5)
 	move.w		($7f66,A5),D0
-	andi.w		#$7,D0
-	cmpi.w            #$48,($20,A0)
-	beq               _yc_48
-	cmpi.w            #$11c,($20,A0)
-	bne               _yc_no11c
+	andi.w		#$f,D0
 	addq.b		#1,($7fe0,A5)
 	move.b		_sect11c(PC,D0),($96,A0)
-	bra               _geigexie	
-_yc_48
-	move.b		_sect48(PC,D0),($96,A0)
-	bra               _geigexie	
-_yc_no11c       
-	move.b		_sectno11c(PC,D0),($96,A0)
-_geigexie	
-	movem.l  		(A7)+,D0			;把原来D0中的数据移回去	
+	movem.l  		(A7)+,D0-D1			;把原来D0中的数据移回去	
 	rts
 _sect11c
-        dc.l            $10000026,$1010000e
-_sect48
-        dc.l            $10000026,$10000010
-_sectno11c
-        dc.l            $10000037,$10000000		
+        dc.l            $10000026,$10100000,$10000026,$10100000
 _no_gdsj
 	moveq		#0,D0	
-	jsr		$119c                   	;进入随机程序	
-         andi.w		#$1f,D0
+	jsr		$119c                   	;进入随机程序
+	moveq		#0,D1
+	move.b		($32d2,A5),D1
+	add.w		D1,D0
+	move.b		($4da,A5),D1
+	add.w		D1,D0
+	move.b		($7f5c,A5),D1
+	add.w		D1,D0	
+         and.w		#$1f,D0
          add.w		D0,D0
          add.w		D0,D0                      ;乘个4，变为4的倍数
 	move.w		_nogdsjdata(PC,D0),($20,A0)	;取下表中随机一个敌兵
@@ -1150,6 +1077,7 @@ _nogdsjdata
         dc.w    $0148,$0000,$00a0,$0000,$011c,$0000,$00f4,$0000
         dc.w    $00f4,$0000,$00f4,$0000,$0090,$0000,$000c,$0000
         dc.w    $0048,$0200,$0060,$0000,$011c,$0000,$007c,$0000
+        
         dc.w    $000c,$0000,$011c,$0000,$0064,$0000,$0048,$0200
         dc.w    $016c,$0000,$0018,$0000,$000c,$0000,$0098,$0000
         dc.w    $0150,$0000,$0064,$0000,$0090,$0000,$00a0,$0000
@@ -1157,8 +1085,12 @@ _nogdsjdata
 _no_dalong
 	clr.l		D0	
 	jsr		$119c                   	;进入随机程序	
-         divu.w		#$18,D0			;随机数在D0里，求余,限制范围( )
-         swap                   D0
+	moveq		#0,D1
+	move.b		($32d2,A5),D1
+	add.w		D1,D0
+	move.b		($4da,A5),D1
+	add.w		D1,D0	
+         andi.w		#$f,D0
          add.w		D0,D0
          add.w		D0,D0                      ;乘个4，变为4的倍数
 	move.w		_no_dldata(PC,D0),($20,A0)	;取下表中随机一个敌兵
@@ -1166,18 +1098,21 @@ _no_dalong
 	move.w		_no_dldata(PC,D0),($26,A0)	;取下表中紧随的出场方式
 	bra		_no_gdbj	                  
 _no_dldata
-        dc.w    $0048,$0200,$016c,$0000,$000c,$0000,$0018,$0000
-        dc.w    $016c,$0000,$00a0,$0000,$011c,$0000,$00f4,$0000
-        dc.w    $0048,$0200,$016c,$0000,$0090,$0000,$00a0,$0000
-        dc.w    $011c,$0000,$00f4,$0000,$0090,$0000,$00a0,$0000
-        dc.w    $0048,$0200,$0064,$0000,$000c,$0000,$0018,$0000
-        dc.w    $0090,$0000,$0064,$0000,$00f4,$0000,$000c,$0000
+        dc.w    $0090,$0000,$016c,$0000,$0048,$0200,$0018,$0000
+        dc.w    $000c,$0000,$00a0,$0000,$011c,$0000,$00f4,$0000
+        dc.w    $0064,$0000,$00f4,$0000,$0090,$0000,$000c,$0000
+        dc.w    $0048,$0200,$00a0,$0000,$016c,$0000,$0018,$0000
+
         
 _no_lianqiu
 	clr.l		D0	
 	jsr		$119c                   	;进入随机程序	
-         divu.w		#$14,D0			;随机数在D0里，求余,限制范围( )
-         swap           D0
+	moveq		#0,D1
+	move.b		($32d2,A5),D1
+	add.w		D1,D0
+	move.b		($4da,A5),D1
+	add.w		D1,D0	
+         andi.w		#$f,D0
          add.w		D0,D0
          add.w		D0,D0                      ;乘个4，变为4的倍数
 	move.w		_no_lianqiu1data(PC,D0),($20,A0)	;取下表中随机一个敌兵
@@ -1188,16 +1123,20 @@ _no_lianqiu1data
         dc.w    $0048,$0200,$016c,$0000,$0048,$0200,$0018,$0000
         dc.w    $016c,$0000,$00a0,$0000,$011c,$0000,$00f4,$0000
         dc.w    $016c,$0000,$0064,$0000,$0090,$0000,$00a0,$0000
-        dc.w    $011c,$0000,$00f4,$0000,$0090,$0000,$00a0,$0000  
-        dc.w    $0048,$0200,$016c,$0000,$0048,$0200,$0018,$0000     
+        dc.w    $00f4,$0000,$0090,$0000,$00a0,$0000,$0018,$0000     
 _no_gdbj
 	clr.l   		D0
 	jsr		$119c                   ;进入随机程序
-	andi.w		#$1f,D0		;随机数在D0里，求余,限制范围( )
+	moveq		#0,D1
+	move.b		($32d2,A5),D1
+	add.w		D1,D0
+	move.b		($4da,A5),D1
+	add.w		D1,D0
+	and.w		#$1f,D0		;随机数在D0里，求余,限制范围( )
 	cmpi.b		#$1,($7f70,A5)	*是否CD模式
 	beq		_cd_buji
 	move.b		_no_gdbj1data(PC,D0),($96,A0)	        ;取下表中随机一个补给
-	movem.l  		(A7)+,D0			;把原来D0中的数据移回去
+	movem.l  		(A7)+,D0-D1			;把原来D0中的数据移回去
 	clr.b  		($5b,A0)
          	rts
 ;-------------------------------非关底补给静态数据表----------------------------------------
@@ -1206,70 +1145,47 @@ _no_gdbj1data
         dc.w    $0301,$0e25,$0127,$1327,$0038,$3837,$2538,$010b
 _cd_buji
 	move.b		_no_gdbj2data(PC,D0),($96,A0)	        ;取下表中随机一个补给
-	movem.l  		(A7)+,D0			;把原来D0中的数据移回去
+	movem.l  		(A7)+,D0-D1			;把原来D0中的数据移回去
 	clr.b  		($5b,A0)
          	rts
 _no_gdbj2data
         dc.w    $0301,$3731,$2700,$1337,$2738,$0037,$2501,$3800
         dc.w    $0301,$1325,$0127,$1327,$0038,$3837,$2538,$0125
-_8gdsj
-	moveq		#$0,D0
-	jsr		$119c
-	andi.w		#$3,D0
-         add.w		D0,D0
-         add.w		D0,D0                      ;乘个4，变为4的倍数
-	move.w		_8gdsj1data(PC,D0),($20,A0)	;取下表中随机一个敌兵
-	addq.b  		#$2,D0
-	move.w		_8gdsj1data(PC,D0),($26,A0)	;取下表中紧随的出场方式
-	clr.b		($96,A0)
-	addq.w		#1,($7f66,A5)
-	moveq		#$0,D0
-	move.w		($7f66,A5),D0
-	andi.w		#$7,D0
-	bne		_cccz11				
-	move.b		#$e,($96,A0)		/每8个关底小兵给个48%血
-_cccz11
-	movem.l  		(A7)+,D0			;把原来D0中的数据移回去	
-	rts					/取消关底补给	
-_8gdsj1data
-	dc.w	$0018,$0000,$0048,$0200,$000c,$0000,$016c,$0000
 		
 ;----------------------------关底随机队列-----------------------------------------
 _gdsj
 	cmpi.b		#$cc,($f,A2)
 	beq		_fub_random
 _zheshiceshi
-	clr.l		D0	
+	moveq		#0,D0	
 	jsr		$119c                   	;进入随机程序
-	divu.w		#$24,D0			;随机数在D0里，求余,限制范围( )
-	swap		D0		    	;余数在高12位，交叉下
+	and.w		#$1f,D0			;随机数在D0里
          add.w		D0,D0
          add.w		D0,D0                      ;乘个4，变为4的倍数
 	move.w		_gdsj1data(PC,D0),($20,A0)	;取下表中随机一个敌兵
-	addq.b  		#$2,D0
+	addq.w  		#$2,D0
 	move.w		_gdsj1data(PC,D0),($26,A0)	;取下表中紧随的出场方式
 _gdbuji111
 	addq.w		#1,($7f66,A5)
-	moveq		#$0,D0
 	move.w		($7f66,A5),D0
-	andi.w		#$3,D0				
+	andi.w		#$f,D0				
 	move.b		_gdbbb(PC,D0),($96,A0)		/每4个关底小兵给个32%血
-	movem.l  		(A7)+,D0			;把原来D0中的数据移回去	
+	movem.l  		(A7)+,D0-D1			;把原来D0中的数据移回去	
 	rts					/取消关底补给
 ;-------------------------------静态数据表----------------------------------------
 _gdbbb
 	dc.l	$00103700,$00001037,$00001000,$00103700
                   
 _gdsj1data
-        dc.w    $0008,$0402,$0008,$0402,$0008,$0202,$0008,$0002
-        dc.w    $000c,$0000,$000c,$0000,$000c,$0000,$000c,$0000
-        dc.w    $0018,$0000,$0018,$0000,$0018,$0000,$0018,$0000
-        dc.w    $0028,$0406,$0028,$0402,$0028,$0206,$0028,$0004
-        dc.w    $0038,$0208,$0038,$020c,$0038,$0008,$0038,$000c
-        dc.w    $0048,$0200,$0048,$0200,$0048,$0200,$0048,$0200
-        dc.w    $0050,$0206,$0050,$0006,$0050,$0206,$0050,$0006
-        dc.w    $016c,$0000,$016c,$0000,$016c,$0000,$016c,$0000  
-        dc.w    $0034,$040c,$0034,$040c,$0034,$0200,$0034,$000c
+        dc.w    $0048,$0200,$016c,$0000,$000c,$0000,$0018,$0000
+        dc.w    $0008,$0402,$0008,$0002,$0008,$0202,$0008,$0402
+        dc.w    $0028,$0006,$0028,$0206,$0028,$0406,$0028,$0404
+        dc.w    $0038,$000c,$0038,$000a,$0038,$020c,$0038,$020c
+        
+        dc.w    $0048,$0200,$016c,$0000,$000c,$0000,$0018,$0000
+        dc.w    $0050,$0006,$0050,$0006,$0050,$0206,$0050,$0206
+        dc.w    $0034,$040c,$0034,$020c,$0034,$000c,$0034,$040c
+        dc.w    $0048,$0200,$016c,$0000,$000c,$0000,$0018,$0000
 
 ;---------------------------随机箱子及宝物----------------------------
 _xzsj
@@ -1284,9 +1200,9 @@ _xzdata
         dc.w    $0002,$0000,$0004,$000a,$000c,$000a,$0004,$0002        
 _xzsjbj
 	jsr		$119c                   ;进入随机程序
-	andi.w		#$1f,D0		    	 ;余数在高12位，交叉下
+	and.w		#$1f,D0		    	 ;余数在高12位，交叉下
 	move.b		_xzbjdata(PC,D0),($96,A0)	        ;取下表中随机一个补给
-	movem.l  		(A7)+,D0			;把原来D0中的数据移回去
+	movem.l  		(A7)+,D0-D1			;把原来D0中的数据移回去
 	clr.b  		($5b,A0)	
          	rts
 _xzbjdata
@@ -1310,7 +1226,7 @@ _random_1b
 	add.w		D0,D0
 	move.w		_1brandom(PC,D0),($20,A0)
 	clr.w		($26,A0)
-	movem.l  		(A7)+,D0			;把原来D0中的数据移回去	
+	movem.l  		(A7)+,D0-D1			;把原来D0中的数据移回去	
 	rts					/取消关底补给
 _1brandom
 	dc.w	$00f4,$0178,$011c,$0064,$00a0,$0090,$00f4,$0090
@@ -1319,16 +1235,16 @@ _random_2b
 	add.w		D0,D0
 	move.w		_2brandom(PC,D0),($20,A0)
 	clr.w		($26,A0)
-	movem.l  		(A7)+,D0			;把原来D0中的数据移回去	
+	movem.l  		(A7)+,D0-D1			;把原来D0中的数据移回去	
 	rts					/取消关底补给
 _2brandom
-	dc.w	$0178,$00a0,$0090,$0150,$0064,$011c,$0090,$0150
+	dc.w	$00a0,$0178,$0090,$0090,$0064,$011c,$0064,$011c
 _random_4b
 	andi.w		#$7,D0
 	add.w		D0,D0
 	move.w		_4brandom(PC,D0),($20,A0)
 	clr.w		($26,A0)
-	movem.l  		(A7)+,D0			;把原来D0中的数据移回去	
+	movem.l  		(A7)+,D0-D1			;把原来D0中的数据移回去	
 	rts					/取消关底补给
 _4brandom
 	dc.w	$00f4,$00a0,$0090,$0150,$00f4,$00a0,$0090,$011c
@@ -1337,7 +1253,7 @@ _random_6b
 	add.w		D0,D0
 	move.w		_6brandom(PC,D0),($20,A0)
 	clr.w		($26,A0)
-	movem.l  		(A7)+,D0			;把原来D0中的数据移回去	
+	movem.l  		(A7)+,D0-D1			;把原来D0中的数据移回去	
 	rts		/取消关底补给
 _6brandom
 	dc.w	$00f4,$0090,$11c,$0064,$00a0,$0090,$11c,$0064	
@@ -1429,17 +1345,20 @@ _jx_boss_
 	bne		_begin_boss                       ;否，跳到非关底玩家数量检测
 	cmpi.b		#$7,($4d9,A5)
 	beq		_8guan
-	moveq		#0,D0
-	move.b		($7fee,A5),D0
-	move.w		#$320,($6c,A6)
-	mulu.w		#$64,D0
-	add.w		D0,($6c,A6)
+	move.w		#$320,($6c,A6)			*7关底加血
 	tst.b		($7f70,A5)
 	beq		_no64_plus
 	add.w		#$64,($6c,A6)
 	cmpi.b		#$2,($7f70,A5)
 	beq		_no64_plus
 	add.w		#$64,($6c,A6)
+	moveq		#0,D0
+	tst.b		($7fee,A5)
+	beq		_no64_plus
+	moveq		#0,D0
+	jsr		$119c
+	and.w		#$7f,D0
+	add.w		D0,($6c,A6)
 _no64_plus		
 	rts
 _begin_boss
@@ -1455,128 +1374,113 @@ _begin_boss
 	jsr         $119c
 	andi.w      #$f,D0
          move.b      _plus_data(PC,D0),($dd,A6)
-         bra		_boss_plus_abc
+         bra		_boss_plus_bcd
 _plus_data
          dc.l	$00000400,$00040000,$04000400,$00040400
 _clr_dd
-         clr.b	($dd,A6)
-_boss_plus_abc
-	tst.b  	($4d9,A5)                   ;检测是否1关
-	bne     	_2guan                       ;否，跳到2关检测
-	cmpi.b  	#$2,($786,A5)                    ;检测是否1关第3场景
-	bne     	_nogd_player                       ;否，跳到非关底玩家数量检测
-	bra	_320_10h
-_2guan
-	cmpi.b  #$1,($4d9,A5)                   ;检测是否2关
-	bne     _3guan                       ;否，跳到3关检测
-	cmpi.b  #$2,($786,A5)                    ;检测是否2关第3场景
-	bne     _nogd_player                       ;否，跳到非关底玩家数量检测
-	bra	    _320_10h
-_3guan     
-     cmpi.b  #$2,($4d9,A5)                   ;检测是否3关
-     bne     _4guan                       ;否，跳到4关检测
-     cmpi.w	#$7c,($20,A6)
-     beq		_320_10h
-     ;cmpi.w  #$2c00,($744,A5)                    ;检测卷轴
-     bra     _nogd_player                       ;否，跳到非关底玩家数量检测
-     ;bra	    _320_10h
-_4guan
-     cmpi.b  #$3,($4d9,A5)                   ;检测是否4关
-     bne     _5guan                       ;否，跳到5关检测
-     cmpi.b  #$2,($786,A5)                    ;检测是否4关第3场景
-     bne     _nogd_player                       ;否，跳到非关底玩家数量检测
-     cmpi.w  #$400,($744,A5)                    ;检测卷轴
-     ble     _nogd_player                       ;否，跳到非关底玩家数量检测     
-     bra	    _320_10h   
-_5guan
-     cmpi.b  #$4,($4d9,A5)                   ;检测是否5关
-     bne     _6guan                       ;否，跳到6关检测
-     cmpi.w  #$1100,($744,A5)                    ;检测卷轴
-     ble     _nogd_player                       ;否，跳到非关底玩家数量检测     
-     bra	    _320_10h
-_6guan
-     cmpi.b  #$5,($4d9,A5)                   ;检测是否6关
-     bne     _nogd_player                       ;否，跳到7关检测
-     cmpi.w	#$48,($20,A6)		*6隐藏的1BOSS+血
-     beq		_320_10h
-     cmpi.w	#$f00,($744,A5)
-     ble		_nogd_player 
+         clr.b	($dd,A6)		*清除X4
+_boss_plus_bcd
+	cmpi.b		#$2,($4d9,A5)                   ;检测是否3关
+	bne		_jx_next
+	cmpi.w		#$7c,($20,A6)
+	beq		_320_10h
+	bra		_nogd_player                       ;否，跳到非关底玩家数量检测
+_jx_next
+	cmpi.w		#$48,($20,A6)		*1关和6隐藏的1BOSS+血
+	beq		_320_10h
+	cmpi.w		#$178,($20,A6)		*178副BOSS加血
+	beq		_320_10h
+	cmpi.w		#$64,($20,A6)
+	bne		_to_guandi_check
+	cmpi.b		#$2,($786,A5)
+	bne		_to_guandi_check
+	cmpi.b		#$3,($4d9,A5)
+	beq		_320_10h
+_to_guandi_check
+	cmpi.b		#$6,($741,A5)		;是否关底（8关底不是6）
+	beq		_320_10h			/
+	bra		_nogd_player                       ;否，跳到非关底玩家数量检测 
 _320_10h
-     move.w	#$320,($6c,A6)
-     moveq	#0,D0
-     move.b	($7fee,A5),D0
-     mulu.w	#$64,D0
-     add.w	D0,($6c,A6)
-     tst.b	($7f70,A5)
-     beq		_gdboss_rts
-     add.w	#$64,($6c,A6)
-     cmpi.b	#$2,($7f70,A5)
-     beq		_boss_b
-     add.w	#$64,($6c,A6)
+	move.w		#$320,($6c,A6)
+	tst.b		($7f70,A5)
+	beq		_gdboss_rts
+	add.w		#$64,($6c,A6)
+	cmpi.b		#$2,($7f70,A5)
+	beq		_boss_b		
+	moveq		#0,D0
+	jsr		$119c
+	and.w		#$7f,D0
+	add.w		D0,($6c,A6)
+	tst.b		($7fee,A5)
+	beq		_boss_c
+	add.w		#$64,($6c,A6)	
 _boss_c
-     cmpi.b       #$4,($dd,A6)
-     bne		_gdboss_rts
-     add.w	#$c8,($6c,A6)
-     rts	
+	cmpi.b		#$4,($dd,A6)
+	bne		_gdboss_rts
+	moveq		#0,D0
+	jsr		$119c
+	and.w		#$7f,D0
+	add.w		D0,($6c,A6)
+	rts	
 _boss_b
-     cmpi.b       #$4,($dd,A6)
-     bne		_gdboss_rts
-     add.w	#$64,($6c,A6)
+	cmpi.b		#$4,($dd,A6)
+	bne		_gdboss_rts
+	moveq		#0,D0
+	jsr		$119c
+	and.w		#$3f,D0
+	add.w		D0,($6c,A6)
 _gdboss_rts
-     rts
+	rts
 _8guan
-        moveq           #0,D0
+	moveq		#0,D0
 	cmpi.w		#$178,($20,A6)
-	beq		_algor_plus
+	bne		_not_178
+	move.w		#$320,($6c,A6)
+	rts
+_not_178
 	cmpi.w		#$150,($20,A6)
 	beq		_algor_plus
 	move.w		#$640,($6c,A6)
 	rts
-_algor_plus			
-	movem.l	D0-D3,-(A7)
-	moveq	#0,D0
-	moveq	#0,D1
-	moveq	#0,D2
-	moveq	#0,D3
-	tst.b	($3274,A5)
-	beq	_if2p
-	addq.b	#1,D0
-	move.w	($32e0,A5),D1
-	add.w	D1,D2
+_algor_plus		
+	movem.l		D0-D3,-(A7)
+	moveq		#0,D0
+	moveq		#0,D1
+	moveq		#0,D2
+	moveq		#0,D3
+	move.w		#$3e8,($6c,A6)
+	move.b		($7fee,A5),D0
+	mulu.w		#$64,D0
+	add.w		D0,($6c,A6)	*8关底每多一人+1行
+	tst.b		($3274,A5)
+	beq		_if2p
+	move.w		($32e0,A5),D1
 _if2p
-	tst.b	($33f4,A5)
-	beq	_if3p
-	addq.b	#1,D0
-	move.w	($3460,A5),D1
-	add.w	D1,D2
+	tst.b		($33f4,A5)
+	beq		_if3p
+	move.w		($3460,A5),D2
+	cmp.w		D1,D2
+	blt		_if3p
+	exg.l		D1,D2	
 _if3p
-	tst.b	($3574,A5)
-	beq	_all_c
-	addq.b	#1,D0
-	move.w	($35e0,A5),D1
-	add.w	D1,D2
+	tst.b		($3574,A5)
+	beq		_all_c
+	move.w		($35e0,A5),D3
+	cmp.w		D1,D3
+	blt		_all_c
+	exg.l		D1,D3
 _all_c
-	move.w	D0,D3
-	move.w          #$3e8,($6c,A6)
-	mulu.w          #$c8,D3		*8关底每多一人+2行
-	add.w           D3,($6c,A6)
-	move.w	D0,D1
-	beq	_nomore7
-	mulu.w	#$1f4,D0
-	cmp.w	D0,D2
-	bls	_nomore7
-	sub.w	D0,D2
-	divu.w	D1,D2
-	;add.w	D2,D2
-	add.w	D2,($6c,A6)
-	;moveq	#0,D0
-	;jsr	$119c
-	;andi.b	#$3f,D0
-	;add.w	D0,($6c,A6)
-	movem.l	(A7)+,D0-D3
-	rts
-_nomore7	
-	movem.l	(A7)+,D0-D3
+	subi.w		#$1f4,D1
+	ble		_no_more_add
+_again_64
+	moveq		#0,D0
+	jsr		$119c
+	and.w		#$7f,D0
+	add.w		D0,($6c,A6)
+	subi.w		#$64,D1
+	bgt		_again_64
+_no_more_add
+	movem.l		(A7)+,D0-D3
 	rts
 _nogd_player
         cmpi.w		#$11c,($20,A6)                   ;是否幻影
@@ -1591,27 +1495,32 @@ _nogd_player
         beq		_nogd_player_ms    
         addq.b		#1,($7fe0,A5)		/BOSS清版+1
 _nogd_player_ms
-        move.w          #$12c,($6c,A6)
+        move.w		#$12c,($6c,A6)
         moveq		#0,D0
-        move.b		($7fee,A5),D0
-        tst.b	($7f70,A5)
-        beq	_nogd_player_rts
-        cmpi.b	#$2,($7f70,A5)
-        beq	_nogd_player_b
-_nogd_player_c
-	tst.b		D0
-	beq		_cd
-        addi.w           #$64,($6c,A6)
-_cd
-        tst.b		($dd,A6)
+        tst.b		($7f70,A5)
         beq		_nogd_player_rts
-        addi.w          #$64,($6c,A6)
+        cmpi.b		#$2,($7f70,A5)
+        beq		_nogd_player_b
+_nogd_player_c
+	tst.b		($7fee,A5)
+	beq		_cd
+	jsr		$119c
+	and.w		#$7f,D0
+	add.w		D0,($6c,A6)
+_cd
+	tst.b		($dd,A6)
+	beq		_nogd_player_rts
+	moveq		#0,D0
+	jsr		$119c
+	and.w		#$7f,D0
+	add.w		D0,($6c,A6)
 _nogd_player_rts     
-        rts
+	rts
 _nogd_player_b
-        mulu.w          #$32,D0
-        add.w           D0,($6c,A6)     
-        rts
+	move.b		($7fee,A5),D0
+	mulu.w		#$32,D0
+	add.w		D0,($6c,A6)     
+	rts
 _nogd_player_120
 	move.w		#$12c,($6c,A6)
 	rts
@@ -1897,22 +1806,9 @@ _rts
 	
 	org	$186800
 _bj_check
-	cmpi.b	#$1,($c6,A3)	*是否锁60
+	cmpi.b	#$1,($c6,A3)	*是否锁暴击
 	bne	_randombj
-	tst.b	($2,A3)
-	bne	_clock_2p
-	move.b	($7f49,A5),($11e,A3)	*两个位置都放
-	move.b	($11e,A3),($11f,A3)	*两个位置都放
-	rts
-_clock_2p
-	cmpi.b	#$1,($2,A3)
-	bne	_clock_3p
-	move.b	($7f4b,A5),($11e,A3)	*两个位置都放
-	move.b	($11e,A3),($11f,A3)	*两个位置都放
-	rts
-_clock_3p
-	move.b	($7f4d,A5),($11e,A3)	*两个位置都放
-	move.b	($11e,A3),($11f,A3)	*两个位置都放
+	move.w	#$4848,($11e,A3)	*两个位置都放
 	rts	
 _randombj
 	move.b	($11e,A3),D0
@@ -1923,7 +1819,7 @@ _randombj
 _go_baoji	
 	moveq	#0,D0
 	jsr	$119c
-	andi.w	#$3f,D0
+	and.w	#$3f,D0
 	move.l	A6,-(A7)
 	movea.l	#$2c9b6,A6
 	move.b	(A6,D0.w),($11e,A3)
@@ -1931,8 +1827,10 @@ _go_baoji
 	movea.l	(A7)+,A6
 	rts
 _clr123pbj
-	cmpi.b	#$3,($786,A5)
-	bne	_noclr123
+	cmpi.b		#$3,($786,A5)
+	bne		_noclr123
+	cmpi.b		#$7,($4d9,A5)
+	bne		_noclr123
 	tst.b		($333a,A5)
 	beq		_clr2p
 	clr.b		($333a,A5)
@@ -1952,40 +1850,61 @@ _noclr123
 	move.b		($5,A6),D0
 	rts
 _dynamic_attack
-		tst.b		($7fbf,A5)			*是否D++
+		tst.b		($7fba,A5)			*是否D
 		beq		_no_dynamic_attack
-		tst.b		($2,A2)				*是否1P
-		bne		_no_dynamic_attack
 		tst.b		($c6,A2)			*是否锁暴击
 		beq		_no_dynamic_attack
-		cmpi.w		#$16c,($20,A3)
-		beq		_dynamic		
-		cmpi.w		#$c,($20,A3)
-		beq		_dynamic
-		cmpi.w		#$8,($20,A3)
-		beq		_dynamic
-		cmpi.w		#$28,($20,A3)
-		beq		_dynamic
+		cmpi.w		#$90,($20,A3)
+		beq		_dynamic_50_if
+		cmpi.w		#$A0,($20,A3)
+		beq		_dynamic_50_if
+		cmpi.w		#$F4,($20,A3)
+		beq		_dynamic_50_if
+		cmpi.w		#$10,($20,A3)
+		beq		_dynamic_50_if
+		cmpi.w		#$178,($20,A3)
+		beq		_dynamic_50_if
+		cmpi.w		#$64,($20,A3)
+		beq		_dynamic_4A
+		cmpi.w		#$150,($20,A3)
+		beq		_dynamic_5E
+		cmpi.w		#$11c,($20,A3)
+		beq		_dynamic_11c
+		cmpi.w		#$48,($20,A3)
+		beq		_dynamic_4A
 		cmpi.w		#$34,($20,A3)
-		beq		_dynamic
-		cmpi.w		#$38,($20,A3)
-		beq		_dynamic
-		cmpi.w		#$50,($20,A3)
-		beq		_dynamic
-		cmpi.w		#$18,($20,A3)
-		beq		_dynamic
-		cmpi.w		#$60,($20,A3)
-		beq		_dynamic
-		cmpi.w		#$74,($20,A3)
-		beq		_dynamic
+		beq		_dynamic_30
+		move.b		#$40,D0
+		mulu.w		D0,D1
+		rts		
 _no_dynamic_attack
 		move.b  		($11e,A2),D0
 		mulu.w  		D0,D1
 		rts
-_dynamic
-		move.b		#$40,D0
+_dynamic_5E
+		move.b		#$5E,D0
 		mulu.w		D0,D1
 		rts
+_dynamic_4A
+		move.b		#$4A,D0
+		mulu.w		D0,D1
+		rts
+_dynamic_30
+		move.b		#$30,D0
+		mulu.w		D0,D1
+		rts		
+_dynamic_11c
+		cmpi.b		#$3,($786,A5)
+		bne		_dynamic_5E
+		cmpi.b		#$6,($4d9,A5)
+		bne		_dynamic_5E
+		move.b		#$4a,D0			*7关底幻影给4A
+		mulu.w		D0,D1
+		rts
+_dynamic_50
+		move.b		#$50,D0
+		mulu.w		D0,D1
+		rts		
 _screat8_icon
 	jsr	$892c.l
 	tst.b	($7f73,A5)
@@ -2411,7 +2330,7 @@ _bla0
 	;beq	$c6a8
 *========================过场景============================
 	org	$ace8
-	jmp	_yinctx
+	jmp	$18566		;_yinctx
 	
 *======================电梯进入时处理=====================
 	;org	$2076a
@@ -2444,33 +2363,16 @@ _abcms
 	adda.l	D0,A0
 _msc_coa
 	jsr	$c0a
-	lea      $90a41c,A1		*游戏难度
+	lea      $90a41c,A1		*
 	moveq    #0,D0
-	tst.b	($4d9,A5)
-	bne	_no_dianti_id
-	tst.b	($786,A5)
-	bne	_no_dianti_id
-	cmpi.b	#$1,($7f70,A5)
-	bne	_no_dianti_id
-	move.b	($7f5c,A5),D0		*电梯敌兵ID
-	andi.w	#$f,D0
-	move.w	D0,($0,A1)
-	move.w   #$1,($2,A1)
-	move.b	($7f5d,A5),D0		*电梯敌兵ID
-	lsr.b	#4,D0
-	move.w	D0,($80,A1)
-	move.w   #$1,($82,A1)
-	move.b	($7f5d,A5),D0		*电梯敌兵ID
-	andi.w	#$f,D0
-	move.w	D0,($100,A1)
-	move.w   #$1,($102,A1)
-_no_dianti_id
-	tst.b	($7f74,A5)
+	tst.b	($7f74,A5)		*6关隐藏标志
 	beq	_no_s6
 	lea	$90a614,A0
 	move.w	#$6,($0,A0)
 	move.w	#$1,($2,A0)
-_no_s6	
+_no_s6
+	tst.b	($7fbc,A5)		*是否有玩家选关
+	beq	_no_next	
 	moveq	#0,D0			*关卡显示
 	movea.l	#$90a29c,A0
 	move.l	#$1001e,($0,A0)
@@ -2508,79 +2410,23 @@ _nomoshi
 	cmpi.b	#$9,($1a,A5)
 	bge	_7fe3p1
 	clr.b	($7fe3,A5)
-	bra	_rts18
+	bra	_no_f3
 _7fe3p1
 	addq.b	#1,($7fe3,A5)
 	cmpi.b	#$4,($7fe3,A5)
-	ble	_rts18
+	ble	_no_f3
 	clr.b	($7fe3,A5)
 	move.w	#$1800,($4d0,A5)
-_rts18
+_no_f3
 	tst.b	($7fba,A5)		*不等于0是D
-	beq	_no_d			*
-	tst.b	($7fbf,A5)	
-	beq	_over2
-	cmpi.b	#$a,($16,A5)
-	bne	_no_d_plus_baoji
-	addq.b	#1,($7f48,A5)
-	cmpi.b	#$3,($7f48,A5)
-	ble	_over2
-	move.b	#$60,($7f49,A5)
-	move.b	#$1,($333a,A5)
-	move.w	#$6060,($3392,A5)
-	bra	_over2
-_no_d_plus_baoji
-	clr.b	($7f48,A5)
-	bra	_over2	
-_d60
-	addq.b	#1,($7f4c,A5)
-	cmpi.b	#$5,($7f4c,A5)
-	ble	_over2
-	move.b	#1,($363a,A5)
-	move.b	#$60,($7f4d,A5)
-	move.w	#$6060,($3692,A5)
-	bra	_over2
-_no_d
+	bne	_over2			*	
+_abc_60
 	cmpi.b	#$30,($1b,A5)	*1P是否按着AB
 	bne	_jc2p60
 	addq.b	#1,($7f48,A5)
 	cmpi.b	#$3,($7f48,A5)
 	ble	_jc2p601
-	cmpi.b	#$4,($7f48,A5)
-	beq	_1_48
-	cmpi.b	#$5,($7f48,A5)
-	beq	_1_50
-	cmpi.b	#$6,($7f48,A5)
-	beq	_1_55
-	cmpi.b	#$7,($7f48,A5)
-	beq	_1_5c
-	cmpi.b	#$8,($7f48,A5)
-	beq	_1_60
-	move.b	#$3,($7f48,A5)
-	bra	_jc2p601
-_1_48
-	move.b	#$48,($7f49,A5)
 	move.w	#$4848,($3392,A5)
-	move.b	#1,($333a,A5)
-	bra	_jc2p601
-_1_50
-	move.b	#$50,($7f49,A5)
-	move.w	#$5050,($3392,A5)
-	move.b	#1,($333a,A5)
-	bra	_jc2p601
-_1_55
-	move.b	#$55,($7f49,A5)
-	move.w	#$5555,($3392,A5)
-	move.b	#1,($333a,A5)
-	bra	_jc2p601
-_1_5c
-	move.b	#$5c,($7f49,A5)
-	move.w	#$5c5c,($3392,A5)
-	move.b	#1,($333a,A5)
-	bra	_jc2p601
-_1_60
-	move.b	#$60,($7f49,A5)
-	move.w	#$6060,($3392,A5)
 	move.b	#1,($333a,A5)
 	bra	_jc2p601	
 _jc2p60	
@@ -2591,41 +2437,7 @@ _jc2p601
 	addq.b	#1,($7f4a,A5)
 	cmpi.b	#$3,($7f4a,A5)
 	ble	_jc3p601
-	cmpi.b	#$4,($7f4a,A5)
-	beq	_2_48
-	cmpi.b	#$5,($7f4a,A5)
-	beq	_2_50
-	cmpi.b	#$6,($7f4a,A5)
-	beq	_2_55
-	cmpi.b	#$7,($7f4a,A5)
-	beq	_2_5c
-	cmpi.b	#$8,($7f4a,A5)
-	beq	_2_60
-	move.b	#$3,($7f4a,A5)
-	bra	_jc3p601
-_2_48
-	move.b	#$48,($7f4b,A5)
 	move.w	#$4848,($3512,A5)
-	move.b	#1,($34ba,A5)
-	bra	_jc3p601
-_2_50
-	move.b	#$50,($7f4b,A5)
-	move.w	#$5050,($3512,A5)
-	move.b	#1,($34ba,A5)
-	bra	_jc3p601
-_2_55
-	move.b	#$55,($7f4b,A5)
-	move.w	#$5555,($3512,A5)
-	move.b	#1,($34ba,A5)
-	bra	_jc3p601
-_2_5c
-	move.b	#$5c,($7f4b,A5)
-	move.w	#$5c5c,($3512,A5)
-	move.b	#1,($34ba,A5)
-	bra	_jc3p601
-_2_60
-	move.b	#$60,($7f4b,A5)
-	move.w	#$6060,($3512,A5)
 	move.b	#1,($34ba,A5)
 	bra	_jc3p601
 _jc3p60
@@ -2636,53 +2448,20 @@ _jc3p601
 	addq.b	#1,($7f4c,A5)
 	cmpi.b	#$3,($7f4c,A5)
 	ble	_over2
-	cmpi.b	#$4,($7f4c,A5)
-	beq	_3_48
-	cmpi.b	#$5,($7f4c,A5)
-	beq	_3_50
-	cmpi.b	#$6,($7f4c,A5)
-	beq	_3_55
-	cmpi.b	#$7,($7f4c,A5)
-	beq	_3_5c
-	cmpi.b	#$8,($7f4c,A5)
-	beq	_3_60
-	move.b	#$3,($7f4c,A5)
-	bra	_over2
-_3_48
-	move.b	#$48,($7f4d,A5)
 	move.w	#$4848,($3692,A5)
-	move.b	#1,($363a,A5)
-	bra	_over2
-_3_50
-	move.b	#$50,($7f4d,A5)
-	move.w	#$5050,($3692,A5)
-	move.b	#1,($363a,A5)
-	bra	_over2
-_3_55
-	move.b	#$55,($7f4d,A5)
-	move.w	#$5555,($3692,A5)
-	move.b	#1,($363a,A5)
-	bra	_over2
-_3_5c
-	move.b	#$5c,($7f4d,A5)
-	move.w	#$5c5c,($3692,A5)
-	move.b	#1,($363a,A5)
-	bra	_over2
-_3_60
-	move.b	#$60,($7f4d,A5)
-	move.w	#$6060,($3692,A5)
-	move.b	#1,($363a,A5)
+	move.b	#$1,($363a,A5)
 	bra	_over2
 _over60
-	clr.b	($7f4c,A5)	
+	clr.b	($7f4c,A5)
 _over2
-	tst.b	($7f73,A5)
+	tst.b	($7f73,A5)		*是否8隐藏
 	beq	_nocount
 	cmpi.b	#$7,($4d9,A5)
 	bne	_nocount
 	cmpi.b	#$1,($786,A5)
 	bne	_nocount
 	subq.b	#1,($7f7b,A5)
+	beq	_gotoscret	*倒计时是否结束
 	movem.l	D0-D3/A0-A3,-(A7)	
 	lea	$90A3B4,A1		/90a6ec，6表示左右位置，ec表示上下位置
 	lea	$1808b0,A0
@@ -2695,36 +2474,20 @@ _over2
 	lea	$1808e0,A0
 	jsr	$c0a
 	movem.l	(A7)+,D0-D3/A0-A3
-	tst.b	($7f7b,A5)	*倒计时是否结束
-	beq	_gotoscret
-	bra	_nocount	
+_nocount	
+	rts
 _gotoscret
 	clr.b	($4d9,A5)
 	move.w	#$0c06,($4d0,A5)
-	cmpi.b   #$1,($7f70,A5)
-	bne      _nocount
-         move.w   #$5a5a,($3392,A5)
-         move.w   #$5a5a,($3512,A5)
-         move.w   #$5a5a,($3692,A5)		
-_nocount
+         ;move.w   #$5c5c,($3392,A5)
+         ;move.w   #$5c5c,($3512,A5)
+         ;move.w   #$5c5c,($3692,A5)		
 	rts
 
+
+
 _scret
-	move.b	($2,A2),($2,A3)
-	tst.b	($4d9,A5)
-	bne	_jcor8
-	tst.b	($786,A5)
-	bne	_noscret
-	cmpi.b	#$1,($7f70,A5)		*是否CD模式
-	bne	_noscret
-	move.b	#$e,($7f77,A5)
-	movem.l	D0-D3/A0-A3,-(A7)	
-	lea	$90A3dc,A1		/90a6ec，6表示左右位置，ec表示上下位置
-	lea	$180880,A0
-	jsr	$c0a
-	movem.l	(A7)+,D0-D3/A0-A3
-	rts		
-_jcor8
+	move.b	($2,A2),($2,A3)	
 	cmpi.b	#$7,($4d9,A5)
 	bne	_noscret
 	cmpi.b	#$1,($786,A5)
@@ -2732,13 +2495,21 @@ _jcor8
 	tst.w	($744,A5)
 	bne	_noscret
 	move.b	#1,($7f73,A5)
-	move.b	#$a,($7f7b,A5)
+	move.b	#$4,($7f7b,A5)
 	rts
-_xdla
-	dc.w	$0048,$0018,$016c,$00f4
 _noscret
 	rts
-
+*==================备用==============================	
+	move.b	($2,A2),($2,A3)
+	cmpi.b	#$1,($7f70,A5)		*是否CD模式
+	bne	_noscret
+	move.b	#$e,($7f77,A5)		*电梯隐藏关标志
+	movem.l	D0-D3/A0-A3,-(A7)	
+	lea	$90A0dc,A1		/90a6ec，6表示左右位置，ec表示上下位置
+	lea	$180880,A0
+	jsr	$c0a
+	movem.l	(A7)+,D0-D3/A0-A3
+	rts
  *======================加载任意场景================================  
 _8gxshd
      	cmpi.b		#$71,($7f73,A5)
@@ -2762,54 +2533,7 @@ _8gxshd
 	rts    
 _zccj1
     	jsr 		$206d4
-	rts	
-	
-
-_yinctx
-     	tst.b		($7f77,A5)
-     	beq		_zccj
-	tst.b		($4d9,A5)
-	beq		_jz7dianti
-	clr.b		($4d9,A5)
-	move.b		#$1,($786,A5)
-	tst.b	         ($3274,A5)
-	beq	         _you_2p
-	;cmpi.w	         #$1f4,($32e0,A5)
-         ;blt               _you_2p
-         move.w            #$5e5e,($3392,A5)
-_you_2p
-	tst.b	         ($33f4,A5)
-	beq               _you_3p
-	;cmpi.w	         #$1f4,($3460,A5)
-         ;blt               _you_3p
-         move.w            #$5e5e,($3512,A5)
-_you_3p
-	tst.b	         ($3574,A5)
-	beq	         _jz8xsd
-	;cmpi.w	         #$1f4,($35e0,A5)
-         ;blt               _jz8xsd
-         move.w            #$5e5e,($3692,A5)
-	bra		_jz8xsd
-_jz7dianti
-	move.b		#$6,($4d9,A5)
-	move.b		#$1,($786,A5)
-_jz8xsd		  	
-    	movem.l 		D0-D7/A0-A6,-(A7)	         
-    	jsr 		$8a44                   ;载入色板
-    	jsr 		$892c                   ;设置亮度
-    	move.b 		#$c,($4d0,A5)
-    	jsr 		$2228a                  ;加载场景
-    	tst.b		($4d9,A5)
-    	bne		_tgzg
-    	jsr		$b52		;清除电梯前景
-    	subq.b		#1,($7a8,A5)
-    	addq.b		#1,($7f77,A5)
-_tgzg
-    	jsr 		$162ae		;加载血条与头像
-    	movem.l 		(A7)+,D0-D7/A0-A6    
-_zccj
-	jmp		$18566
-	
+	rts		
 *===========================三关随机处理、电台处理、隐藏关幻影电梯坐标修复 ==========================
 _3guan_diantai
 	move.w		#$160,($20,A0)
@@ -3161,7 +2885,18 @@ _guandi_auto_move_xy
 _1e144
 	jmp	$1e144
 _screat6_guandi_auto_move_xy
-	dc.l	$12980180,$12680190,$12380170		
+	dc.l	$12980180,$12680190,$12380170
+_bonus_ad
+	
+	tst.b	($7f70,A5)
+	beq	_bonus_a_d
+	tst.b	($7fba,A5)
+	bne	_bonus_a_d
+	addq.b	#1,($a3,A6)
+	jmp	$6be2
+_bonus_a_d
+	move.b	#$1,($10e,A6)
+	jmp	$6bd2		
 *===========杰克AB打晕敌兵===============================
 	org	$a275a
 	dc.w	$0001
@@ -3179,108 +2914,7 @@ _screat6_guandi_auto_move_xy
 	
 *==================奖命调整==========================================
 	org	$6bcc
-	addq.b	#1,($a3,A6)
-	bra	$6be2
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	jmp	_bonus_ad
 
 
 
