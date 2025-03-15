@@ -50,7 +50,7 @@ _beginbj
 	bne	_beginbj
 	cmpi.l	#$6e000006,$116d6
 	bne	_beginbj
-	move.w   #$4848,($11e,A3)
+	move.w   #$4848,($11e,A3)		*开局例行走一次暴击加载
 	rts
 _clrbegin
 	cmpi.l	#$40484040,$2c9c0
@@ -104,16 +104,14 @@ _clrbegin
 	rts
 _clr1901
 	move.b		#$2,($0,A6)
-	move.w		#$100,($ec,A6)
+	move.w		#$200,($ec,A6)
 	clr.l		($7fe0,A5)
 	tst.b		($7fba,A5)
 	beq		_no_d_fixed
-	tst.b		($3274,A5)
-	beq		_no_d_fixed
-	move.b		#$60,($7f49,A5)
-	move.w		#$6060,($3392,A5)
-	move.b		#1,($333a,A5)
-	rts
+	cmpa.w		#$B274,A6
+	bne		_no_d_fixed
+	move.w		#$4040,($11e,A6)
+	move.b		#1,($c6,A6)
 _no_d_fixed
 	rts		
 _fbf4
@@ -241,24 +239,31 @@ _b1d0
 	movem.l	D0-D1,-(A7)
 	move.b   ($636,A5),($7f5c,A5)
 	moveq	#0,D1
+	move.b   ($636,A5),D1
+	beq	_no_119c
+_back_119c
+	moveq	#0,D0
+	jsr	$119c
+	subq.b	#1,D1
+	bne	_back_119c
+_no_119c
+	moveq	#0,D1
 	move.b	($2,A0),D1
 	add.b	#$16,D1
 	btst	#$2,(A5,D1.w)	;玩家按了下方向键
 	bne	_down
 	btst	#$3,(A5,D1.w)	;玩家按了上方向键
 	bne	_up
-	clr.b		($7fba,A5)	;模式
-	clr.b		($7f49,A5)
+	clr.b		($7fba,A5)	;A模式
 	clr.b		($c6,A0)
-	move.w		#$4848,($11e,A0)	
+	move.w		#$6060,($11e,A0)	
 	movem.l		(A7)+,D0-D1
 	rts
 _up
 	move.b		#$2,($7f70,A5)		*简易模式正序八关B模式
 	clr.b		($7fba,A5)	;
-	clr.b		($7f49,A5)
 	clr.b		($c6,A0)
-	move.w		#$4848,($11e,A0)
+	move.w		#$5050,($11e,A0)
 	movem.l		(A7)+,D0-D1
 	rts	
 _down
@@ -268,13 +273,12 @@ _down
 	add.b		#$16,D1
 	btst		#$5,(A5,D1.w)	；玩家按了B键
 	bne		_push_b_key
-	move.b		#$1,($7fba,A5)
-	move.w		#$5050,($11e,A0)
+	move.b		#$1,($7fba,A5)		*D模式
+	move.w		#$4040,($11e,A0)
 	movem.l		(A7)+,D0-D1
 	rts
 _push_b_key
 	clr.b		($7fba,A5)	;C模式
-	clr.b		($7f49,A5)
 	clr.b		($c6,A0)
 	move.w		#$4848,($11e,A0)
 	movem.l		(A7)+,D0-D1
@@ -302,7 +306,7 @@ _nextstage
 	clr.l	($7fa4,A5)
 	clr.l	($7fa8,A5)    
 	clr.l	($7fe0,A5)
-	clr.l	($7f76,A5)
+	;clr.l	($7f76,A5)
 	tst.b	($7f73,A5)		;隐藏关2回8关标志
 	beq	_randomlevel
 	cmpi.b	#$7,($4d9,A5)
@@ -1038,8 +1042,8 @@ _jc1
 	bra		_gdsj			*1关底出精英怪		
 *----------------------------非关底随机----------------------------------------------
 _dianticl	
-	tst.b		($7f77,A5)		*是否隐藏电梯
-	beq		_no_dalong
+	cmpi.b		#$e,($7f77,A5)		*是否隐藏电梯
+	bne		_no_dalong
 	move.w            #$11c,($20,A0)
 	moveq		#0,D0	
 	addq.w		#1,($7f66,A5)
@@ -1050,7 +1054,7 @@ _dianticl
 	movem.l  		(A7)+,D0-D1			;把原来D0中的数据移回去	
 	rts
 _sect11c
-        dc.l            $10000026,$10100000,$10000026,$10100000
+        dc.l            $10000026,$10100026,$10000010,$10261000
 _no_gdsj
 	moveq		#0,D0	
 	jsr		$119c                   	;进入随机程序
@@ -1141,8 +1145,8 @@ _no_gdbj
          	rts
 ;-------------------------------非关底补给静态数据表----------------------------------------
 _no_gdbj1data
-        dc.w    $0338,$3731,$2700,$1337,$2738,$3837,$2501,$3838
-        dc.w    $0301,$0e25,$0127,$1327,$0038,$3837,$2538,$010b
+        dc.w    $0338,$3731,$2738,$1337,$2738,$3837,$2501,$3838
+        dc.w    $0301,$0e25,$0127,$1327,$3838,$3837,$2538,$010b
 _cd_buji
 	move.b		_no_gdbj2data(PC,D0),($96,A0)	        ;取下表中随机一个补给
 	movem.l  		(A7)+,D0-D1			;把原来D0中的数据移回去
@@ -1808,7 +1812,7 @@ _rts
 _bj_check
 	cmpi.b	#$1,($c6,A3)	*是否锁暴击
 	bne	_randombj
-	move.w	#$4848,($11e,A3)	*两个位置都放
+	;move.w	#$4848,($11e,A3)	*两个位置都放
 	rts	
 _randombj
 	move.b	($11e,A3),D0
@@ -1850,30 +1854,28 @@ _noclr123
 	move.b		($5,A6),D0
 	rts
 _dynamic_attack
-		tst.b		($7fba,A5)			*是否D
-		beq		_no_dynamic_attack
 		tst.b		($c6,A2)			*是否锁暴击
 		beq		_no_dynamic_attack
+		cmpi.w		#$48,($20,A3)
+		beq		_dynamic_4A
+		cmpi.w		#$64,($20,A3)
+		beq		_dynamic_4A
+		cmpi.w		#$11c,($20,A3)
+		beq		_dynamic_11c
 		cmpi.w		#$90,($20,A3)
 		beq		_dynamic_50_if
 		cmpi.w		#$A0,($20,A3)
 		beq		_dynamic_50_if
 		cmpi.w		#$F4,($20,A3)
 		beq		_dynamic_50_if
+		cmpi.w		#$150,($20,A3)
+		beq		_dynamic_5E
 		cmpi.w		#$10,($20,A3)
 		beq		_dynamic_50_if
 		cmpi.w		#$178,($20,A3)
 		beq		_dynamic_50_if
-		cmpi.w		#$64,($20,A3)
+		cmpi.w		#$7c,($20,A3)
 		beq		_dynamic_4A
-		cmpi.w		#$150,($20,A3)
-		beq		_dynamic_5E
-		cmpi.w		#$11c,($20,A3)
-		beq		_dynamic_11c
-		cmpi.w		#$48,($20,A3)
-		beq		_dynamic_4A
-		cmpi.w		#$34,($20,A3)
-		beq		_dynamic_30
 		move.b		#$40,D0
 		mulu.w		D0,D1
 		rts		
@@ -1888,10 +1890,6 @@ _dynamic_5E
 _dynamic_4A
 		move.b		#$4A,D0
 		mulu.w		D0,D1
-		rts
-_dynamic_30
-		move.b		#$30,D0
-		mulu.w		D0,D1
 		rts		
 _dynamic_11c
 		cmpi.b		#$3,($786,A5)
@@ -1904,7 +1902,11 @@ _dynamic_11c
 _dynamic_50
 		move.b		#$50,D0
 		mulu.w		D0,D1
-		rts		
+		rts
+_dynamic_50_if
+		cmpi.b		#$1,($7f70,A5)
+		beq		_dynamic_50
+		bra		_dynamic_5E
 _screat8_icon
 	jsr	$892c.l
 	tst.b	($7f73,A5)
@@ -2426,9 +2428,14 @@ _abc_60
 	addq.b	#1,($7f48,A5)
 	cmpi.b	#$3,($7f48,A5)
 	ble	_jc2p601
-	move.w	#$4848,($3392,A5)
 	move.b	#1,($333a,A5)
-	bra	_jc2p601	
+	cmpi.b	#$1,($7f70,A5)
+	beq	_1P_CD
+	move.w	#$6060,($3392,A5)
+	bra	_jc2p601
+_1P_CD
+	move.w	#$4a4a,($3392,A5)
+	bra	_jc2p601
 _jc2p60	
 	clr.b	($7f48,A5)
 _jc2p601
@@ -2437,9 +2444,14 @@ _jc2p601
 	addq.b	#1,($7f4a,A5)
 	cmpi.b	#$3,($7f4a,A5)
 	ble	_jc3p601
-	move.w	#$4848,($3512,A5)
 	move.b	#1,($34ba,A5)
+	cmpi.b	#$1,($7f70,A5)
+	beq	_2P_CD
+	move.w	#$6060,($3512,A5)
 	bra	_jc3p601
+_2P_CD
+	move.w	#$4a4a,($3512,A5)
+	bra	_jc3p601	
 _jc3p60
 	clr.b	($7f4a,A5)
 _jc3p601
@@ -2448,8 +2460,13 @@ _jc3p601
 	addq.b	#1,($7f4c,A5)
 	cmpi.b	#$3,($7f4c,A5)
 	ble	_over2
-	move.w	#$4848,($3692,A5)
 	move.b	#$1,($363a,A5)
+	cmpi.b	#$1,($7f70,A5)
+	beq	_3P_CD
+	move.w	#$6060,($3692,A5)
+	bra	_over2
+_3P_CD
+	move.w	#$4a4a,($3692,A5)
 	bra	_over2
 _over60
 	clr.b	($7f4c,A5)
@@ -2487,7 +2504,9 @@ _gotoscret
 
 
 _scret
-	move.b	($2,A2),($2,A3)	
+	move.b	($2,A2),($2,A3)
+	tst.b	($4d9,A5)
+	beq	_scret_1	
 	cmpi.b	#$7,($4d9,A5)
 	bne	_noscret
 	cmpi.b	#$1,($786,A5)
@@ -2499,13 +2518,15 @@ _scret
 	rts
 _noscret
 	rts
-*==================备用==============================	
-	move.b	($2,A2),($2,A3)
+*==================隐藏电梯==============================	
+_scret_1
+	tst.b	($786,A5)
+	bne	_noscret
 	cmpi.b	#$1,($7f70,A5)		*是否CD模式
 	bne	_noscret
 	move.b	#$e,($7f77,A5)		*电梯隐藏关标志
 	movem.l	D0-D3/A0-A3,-(A7)	
-	lea	$90A0dc,A1		/90a6ec，6表示左右位置，ec表示上下位置
+	lea	$90A0ec,A1		/90a6ec，6表示左右位置，ec表示上下位置
 	lea	$180880,A0
 	jsr	$c0a
 	movem.l	(A7)+,D0-D3/A0-A3
@@ -2544,6 +2565,8 @@ _huanying
 	tst.b		($7f77,A5)
 	beq		_noxiufuhuanying
 	cmpi.b		#$6,($4d9,A5)
+	bne		_noxiufuhuanying
+	cmpi.b		#$1,($786,A5)
 	bne		_noxiufuhuanying
 	cmpi.w		#$38,($8,A6)
 	bge		_jcsxb
@@ -2915,6 +2938,15 @@ _bonus_a_d
 *==================奖命调整==========================================
 	org	$6bcc
 	jmp	_bonus_ad
+
+
+
+
+
+
+
+
+
 
 
 

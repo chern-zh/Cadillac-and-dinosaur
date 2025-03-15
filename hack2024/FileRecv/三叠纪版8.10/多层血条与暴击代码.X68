@@ -190,7 +190,7 @@ _ms_return
                   beq          _move1f4
 		cmpi.b	#$1,($7f70,A5)          *模式C
 		beq	_no_plus
-		move.w	#$190,($6c,A6)
+		;move.w	#$190,($6c,A6)
 		rts
 _move1f4
 		move.w	#$1F4,($6c,A6)		
@@ -256,10 +256,7 @@ _return
                         rts
 _show_begin
 		     cmpi.b	#$1,($c6,A6)		*是否锁暴击
-		     bne		_zcxsbaoji
-		     tst.b	($7fba,A5)		*是否D
-		     bne		_dplus_bjxs
-		     suba.l	#$8,A0
+		     beq		_dynamic_bjxs
 _zcxsbaoji
                         moveq	#$0,D0                                  ;清空D0  
                         move.b      ($11e,A6),D0                  ;暴击值代入D0
@@ -271,8 +268,9 @@ _zcxsbaoji
                         move.w      D0,($80,A0)                          ;个位数要显示的位置(90a79c改了会移动显示位置)  
                         move.w      D1,($82,A0)            ;样式
                         bra         _return           
-_dplus_bjxs
-			lea	$90a714,A1
+_dynamic_bjxs
+			suba.l	#$8,A0
+			movea.l	A0,A1
 			lea	_dplusbj,A0
 			jsr	$c0a
 			bra	_return	
@@ -329,6 +327,8 @@ _2hsj
 	dc.l	$0fff0666,$079e0000,$0fff0364,$06660000
 	dc.l	$0fff0d91,$03640000,$0fff076c,$0d910000
 	dc.l	$0fff0d13,$076c0000,$0fff0111,$0d130000
+
+
 
 
 

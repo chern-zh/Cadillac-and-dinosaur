@@ -75,9 +75,12 @@ _11C_64_150
 	rts
 _a376
 	cmpi.b	#$3,($786,A5)
-	bne	_rts
-	move.w	A2,($76,A3)
-_rts	
+	beq	_new_xl
+	cmpi.b	#$3,($4d9,A5)
+	beq	_new_xl
+	rts
+_new_xl
+	move.w	A2,($76,A3)	
 	rts
 
 *-------------------------------大个子与4B晕厥------------------------------------
@@ -93,6 +96,7 @@ _4b_yun
         cmpi.b          #$4,($4d9,A5)
         bne             _2b54e
         jmp             $2b214
+
 
 
 

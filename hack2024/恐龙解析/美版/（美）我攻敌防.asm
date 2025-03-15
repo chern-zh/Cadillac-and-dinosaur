@@ -50,7 +50,7 @@
 02B94C: EA49                       lsr.w   #5, D1
 02B94E: 50ED 04F4                  st      ($4f4,A5)			/st就是set
 02B952: 2C7C 000A 32FA             movea.l #$a32fa, A6
-02B958: 302B 0084                  move.w  ($84,A3), D0			/($84,A3)敌兵什么属性？
+02B958: 302B 0084                  move.w  ($84,A3), D0			/($84,A3)
 02B95C: 4DF6 0000                  lea     (A6,D0.w), A6
 02B960: 101E                       move.b  (A6)+, D0
 02B962: D000                       add.b   D0, D0
