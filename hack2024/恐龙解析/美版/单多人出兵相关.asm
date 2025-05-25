@@ -5,8 +5,8 @@
 00FD3E: 6000 00A2                  bra     $fde2			；
 00FD42: 3200                       move.w  D0, D1
 00FD44: 0241 0060                  andi.w  #$60, D1
-00FD48: 6700 0024                  beq     $fd6e
-00FD4C: 0C01 0040                  cmpi.b  #$40, D1
+00FD48: 6700 0024                  beq     $fd6e			:00 or 03，无需验证玩家人数，直接加载
+00FD4C: 0C01 0040                  cmpi.b  #$40, D1			;=40
 00FD50: 6600 000A                  bne     $fd5c
 00FD54: 4A2D 04EF                  tst.b   ($4ef,A5)		；检测当前玩家数量是否1人
 00FD58: 6700 0088                  beq     $fde2
