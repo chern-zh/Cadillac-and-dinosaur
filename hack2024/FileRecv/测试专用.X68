@@ -23,6 +23,9 @@ _y
 	add.l	D1,($10,A6)
 	rts
 
+	org	$3740
+	move.b	#$2,($4ef,A5)
+	rts
 *~Font name~Courier New~
 *~Font size~10~
 *~Tab type~1~
