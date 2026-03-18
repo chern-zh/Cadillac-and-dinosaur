@@ -699,14 +699,6 @@ _clrg2
 	org	$acee
 	jmp	$180f20
 	org	$180f20
-	cmpi.b	#$6,($4d9,A5)
-	bne	_no_english
-	movem.l	D0-D3/A0-A3,-(A7)	
-	lea	$90a0a4,A1		/90a6ec，6表示左右位置，ec表示上下位置
-	lea	$183f00,A0
-	jsr	$c0a
-	movem.l	(A7)+,D0-D3/A0-A3	
-_no_english
 	addi.b	#$1,($7fd4,A5)
 	addi.b	#$1,($7fd6,A5)
 	move.b	#$1,($4d4,A5)
@@ -840,6 +832,7 @@ _sz_e_a
 		moveq		#$b,D0
 		jsr			$120e
 		rts	
+
 
 
 

@@ -14,10 +14,6 @@ _sub_baoji
 	movem.l	D0-D1/A0,-(A7)                          ;D0»Î’ª
 	moveq	#0,D0
 	move.l	#$102,D1
-	tst.b	($7fd8,A5)
-	beq	_noyinc
-	move.w	#$11e,D1
-_noyinc
 	cmpi.b	#$1,($2,A6)
 	bgt	_3p
 	beq	_2p
@@ -49,6 +45,8 @@ _baoji_xuanran
 	move.w	D0,($80,A0)
 	move.w	D1,($82,A0)
 	rts
+
+
 
 
 

@@ -510,7 +510,7 @@ _pbrts
 	org		$af7c
 	jmp		_xuanguan
 	
-*========================难度显示============================
+*========================禁止黄帽============================
 	org		$103f2
 	jsr		_diff_show
 	
@@ -536,7 +536,7 @@ _time_minus
 _afa6
 	jmp	$afa6
 _diff_show
-	cmpi.b	#$9,($1a,A5)
+	cmpi.b	#$9,($1a,A5)	;按住开始建
 	bge	_7fe3p1
 	clr.b	($7f13,A5)
 	bra	_showdiffu
@@ -548,30 +548,50 @@ _7fe3p1
 	move.w	#$1800,($4d0,A5)
 _showdiffu
 	move.b	#$32,($4ea,A5)
+	cmpi.b	#$1,($7fc0,A5)
+	bne	_hm
+	tst.b	($3274,A5)
+	beq	_camp2
+	cmpi.w	#$4,($3294,A5)
+	bne	_camp2
+	move.w	#$1800,($4d0,A5)
+_camp2
+	tst.b	($33f4,A5)
+	beq	_camp3
+	cmpi.w	#$4,($3414,A5)
+	bne	_camp3
+	move.w	#$1800,($4d0,A5)
+_camp3
+	tst.b	($3574,A5)
+	beq	_hm
+	cmpi.w	#$4,($3594,A5)
+	bne	_hm
+	move.w	#$1800,($4d0,A5)
+_hm
 	movem.l	D0-D3/A0-A3,-(A7)
-	lea      $90a51c,A1		*游戏难度
-	moveq    #0,D0
-	move.b   ($7668,A5),D0		*游戏难度
-	move.w   D0,($0,A1)
-	move.w   #$1e,($2,A1)
-	move.b   ($766c,A5),D0		*游戏难度
-	move.w   D0,($100,A1)
-	move.w   #$1e,($102,A1)
-	move.w   ($5ee,A5),D0		*游戏难度
-	lsr.b    #4,D0
-	move.w   D0,($200,A1)
-	move.w   #$1e,($202,A1)
-	move.w   ($5ee,A5),D0		*游戏难度
-	andi.w    #$f,D0
-	move.w   D0,($280,A1)
-	move.w   #$1e,($282,A1)
+	;lea      $90a51c,A1		*游戏难度
+	;moveq    #0,D0
+	;move.b   ($7668,A5),D0		*游戏难度
+	;move.w   D0,($0,A1)
+	;move.w   #$1e,($2,A1)
+	;move.b   ($766c,A5),D0		*游戏难度
+	;move.w   D0,($100,A1)
+	;move.w   #$1e,($102,A1)
+	;move.w   ($5ee,A5),D0		*游戏难度
+	;lsr.b    #4,D0
+	;move.w   D0,($200,A1)
+	;move.w   #$1e,($202,A1)
+	;move.w   ($5ee,A5),D0		*游戏难度
+	;andi.w    #$f,D0
+	;move.w   D0,($280,A1)
+	;move.w   #$1e,($282,A1)
 	tst.b	($7f11,A5)
 	beq	_no_gd
 	lea	$90a21c,A1
 	move.w	#$23,($0,A1)
-	move.w	#$02,($2,A1)
+	move.w	#$01,($2,A1)
 	move.w	#$23,($80,A1)
-	move.w	#$02,($82,A1)
+	move.w	#$01,($82,A1)
 _no_gd
 	movem.l	(A7)+,D0-D3/A0-A3
 	rts
@@ -609,6 +629,8 @@ _c58e
 	
 	org	$c588
 	jmp	_screat8_map
+
+
 
 
 

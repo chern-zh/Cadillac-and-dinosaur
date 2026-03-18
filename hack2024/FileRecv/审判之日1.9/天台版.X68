@@ -11,7 +11,7 @@ _begin_cl
 	clr.l		($7ffc,A5)
 	clr.l		($7fe0,A5)
 	clr.l		($7fcc,A5)
-	clr.b		($7fd8,A5)
+	clr.w		($7fd8,A5)
 	move.b		#$7,($7668,A5)
 	move.b		#$3,($766c,A5)
 	move.b		#$5f,($777b,A5)
@@ -98,16 +98,7 @@ _infinite_time
 	rts   
 _tiantai
 	clr.b		($4d9,A5)
-	rts    
-_zj7jc
-	;cmpi.b		#$1,($7fcc,A5)		/是否刚过去真7关
-	;bne		_jr5g		/否，去5关
-	;clr.b		($7fcc,A5)
-	;clr.b		($4d9,A5)
-	;rts 	
-_jr5g	
-	;move.b		#$4,($4d9,a5)		/放入第5关
-	;rts					/第5关不回天台，直接返回
+	rts
 
 
 ;----------------------------------过天台后加载场景--------------------------------     
@@ -164,7 +155,6 @@ _guandi6
 	move.b		#$1,($786,A5)
 	bra		_seban
 _guandi7
-	;addi.b		#$1,($7fcc,A5)		/真7关标志位
 	move.b		#$6,($4d9,A5)
 	move.b		#$3,($786,A5)		
 	bra		_seban
@@ -190,7 +180,7 @@ _rbjt
 		cmpa.l	#$914800,A1					;小于914800的不要交换，可能是人物色板跟其他
 		blt	_8ad2_tui
 		cmpi.b	#$3,($4d9,A5)
-		bne	_jc_tiantai
+		bne	_8ad2_tui
 		movem.l	D0-D7,-(A7)					;再次改变写入显存数据的R跟G色(交换)		
 		move.l	#$f,D4						;循环计数		
 _bhjhgoon1
@@ -306,7 +296,7 @@ _jia7
 ;-------------第5关仅铁头龙能过关--------------------------------------------	
 	cmpi.w		#$A0,($20,A6)		;第5关死者是否铁头龙
 	beq		_guoguan			;是，跳到过关程序
-	cmpi.w		#$64,($20,A6)		/大龙清理尸体
+	cmpi.w		#$64,($20,A6)		
 	bne		_rts
 	move.w		#$28,($20,A6)
 	rts					;否，不过关，直接返回
@@ -324,9 +314,21 @@ _jc1_3
 	
 _jc4_3
 	addq.b		#1,($7ff2,A5)
-	cmpi.b		#$3,($7ff2,A5)
-	bge		_guoguan
-	rts	
+	move.l		D0,($7fb8,A5)
+	move.l		D1,($7fb4,A5)
+	moveq		#0,D1
+	moveq		#0,D0
+	move.b		($7fd9,A5),D0
+	move.b		($7ff2,A5),D1
+	cmp.b		D0,D1
+	bge		_guoguan44
+	move.l		($7fb4,A5),D1
+	move.l		($7fb8,A5),D0
+	rts
+_guoguan44
+	move.l		($7fb4,A5),D1
+	move.l		($7fb8,A5),D0
+	bra		_guoguan
 _jc_2
 	addq.b		#1,($7ff2,A5)
 	cmpi.b		#$2,($7ff2,A5)
@@ -344,16 +346,9 @@ _rts
 	rts	
 _guoguan_6
 	cmpi.w		#$10,($20,A6)
-	beq		_guoguan66
+	beq		_guoguan
 	cmpi.w		#$120,($20,A6)
-	beq		_guoguan66
-	rts
-_guoguan66
-	tst.b		($7fd8,A5)
-	bne		_guoguan
-	addq.b		#1,($7ff2,A5)
-	cmpi.b		#$2,($7ff2,A5)
-	bge		_guoguan	
+	beq		_guoguan
 	rts		
 _guoguan
 	move.b		#$1,($4d4,A5)
@@ -820,6 +815,12 @@ _boss_gdjx
 	mulu.w		#$64,D0
 	add.w		#$320,D0
 	move.w		D0,($6c,A6)
+	cmpi.b		#$3,($4d9,A5)
+	bne		_jxrts
+	cmpi.w		#$64,($20,A6)
+	bne		_jxrts
+	addq.b		#1,($7fd9,A5)
+_jxrts
 	rts
 _tiantaijiaxie	
 	tst.b		($786,A5)			/是否天台
@@ -841,6 +842,11 @@ _jcsl
 	jsr		_random_0
 	org		$102000
 _random_0
+	cmpi.w		#$AA,($c,A2)
+	bne		_nextsuiji
+	clr.w		($5c,A0)
+	bra		_nosuiji
+_nextsuiji
 	tst.b		($4d9,A5)
 	bne		_random_1
 	tst.b		($786,A5)
@@ -859,12 +865,10 @@ _random_1
 	cmpi.w		#$300,($8,A0)
 	ble		_suiji
 	addi.w		#$20,($8,A0)		;2关所有右侧敌兵X坐标右移20
-	bra		_suiji	
+	bra		_suiji
 _jc5
 	cmpi.b		#$4,($4d9,A5)		;5关
 	bne		_jc6
-	cmpi.w		#$64,($4,A2)
-	beq		_nosuiji
 	cmpi.w		#$1140,($744,A5)
 	bge		_suiji
 	bra		_nosuiji
@@ -872,63 +876,20 @@ _jc5
 _jc6
 	cmpi.b		#$5,($4d9,A5)		;6关
 	bne		_jc8
-	cmpi.w		#$120,($4,A2)
-	beq		_boss_120
 	cmpi.w		#$f90,($744,A5)
 	ble		_nosuiji
-	cmpi.w		#$64,($4,A2)
-	beq		_6guan_64
-	cmpi.w		#$11c,($20,A0)
-	bne		_suiji
-	tst.b		($7fee,A5)
-	beq		_suiji
-	move.b		#$b,($96,A0)
-	rts
-_boss_120
-	tst.b		($7fd8,A5)
-	beq		_change_9_6
-	bra		_nosuiji
-_change_9_6
-	move.w		#$600,($26,A0)
-	bra		_nosuiji
+	bra		_suiji
 	
 _jc8
 	cmpi.b		#$7,($4d9,A5)		;8关
 	bne		_nosuiji			;非8关，1、3、7关不随机
 	cmpi.w		#$1100,($744,A5)
-	ble		_nosuiji
-	cmpa.l		#$B60c6,A2
-	bne		_8suiji
-	tst.b		($7fee,A5)
-	beq		_8suiji
-	tst.b		($7f30,A5)
-	bne		_check_2_3
-	move.w		#$11c,($20,A0)
-	move.b		#$b,($96,A0)
-	addq.b		#1,($7f30,A5)
-	rts
-_check_2_3
-	cmpi.b		#$1,($7fee,A5)
-	beq		_8suiji
-	move.w		#$A0,($20,A0)
-	clr.b		($96,A0)
-	rts
+	bge		_8suiji
 _nosuiji
 	move.b		($f,A2),($96,A0)
 	rts
-_6guan_64
-	tst.b		($7fee,A5)
-	bne		_nosuiji
-	move.w		#$90,($20,A0)
-	bra		_nosuiji
 *---------------------tiantai------------------------------------------
-_tt_suiji
-	cmpi.w		#$140,($4,A2)
-	bne		_jcc
-	tst.b		($7fee,A5)
-	beq		_nosuiji
-	bra		_three_c
-_jcc	
+_tt_suiji	
 	cmpi.w		#$c,($4,A2)
 	bne		_nosuiji
 _three_c	
@@ -1325,6 +1286,9 @@ _3Pxljc
 	move.w	D0,D1
 _bla0
 	rts
+
+
+
 
 
 
